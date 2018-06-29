@@ -3,6 +3,7 @@
 . credentials/guid.sh
 . credentials/opentlc.sh
 . credentials/cluster.sh
+. credentials/passwords.sh
 
 oc_connect () {
   ./oc_connect.sh
@@ -11,12 +12,12 @@ oc_connect () {
 
 setup_projects () {
   ./setup_projects.sh "$GUID" "$USER"
+  sleep 5s
   next_step setup_jenkins
 }
 
 setup_jenkins () {
-  oc project ${GUID}-jenkins
-  ./setup_jenkins.sh "$GUID" "$REPO" "$CLUSTER"
+  ./setup_jenkins.sh "$GUID" "$REPO" "$CLUSTER" "${JENKINS_PASSWORD}"
   next_step end
 }
 
