@@ -18,6 +18,11 @@ setup_projects () {
 
 setup_jenkins () {
   ./setup_jenkins.sh "$GUID" "$REPO" "$CLUSTER" "${JENKINS_PASSWORD}"
+  next_step setup_nexus
+}
+
+setup_nexus () {
+  ./setup_nexus.sh "$GUID"
   next_step end
 }
 
