@@ -23,6 +23,11 @@ setup_jenkins () {
 
 setup_nexus () {
   ./setup_nexus.sh "$GUID"
+  next_step setup_sonar
+}
+
+setup_sonar () {
+  ./setup_sonar.sh "$GUID"
   next_step end
 }
 
