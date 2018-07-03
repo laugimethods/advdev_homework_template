@@ -36,10 +36,11 @@ while : ; do
 done
 
 # Fails when used in conjunction with `setup_projects.sh`: `serviceaccount "jenkins" not found`
-#oc new-app -f ../templates/jenkins.yml -p HOST="jenkins-${GUID}-jenkins.apps.${CLUSTER}"
+oc new-app -f ../templates/jenkins.json -p MEMORY_LIMIT=2Gi -p ENABLE_OAUTH=false
+## oc create -f ../templates/jenkins.yml -p MEMORY_LIMIT=2Gi -p ENABLE_OAUTH=false
 
 # See https://docs.openshift.com/container-platform/3.9/using_images/other_images/jenkins.html
-oc new-app \
-    -e JENKINS_PASSWORD=${JENKINS_PASSWORD} \
-    -e OPENSHIFT_ENABLE_OAUTH=false \
-    jenkins-persistent
+#oc new-app \
+#    -e JENKINS_PASSWORD=${JENKINS_PASSWORD} \
+#    -e OPENSHIFT_ENABLE_OAUTH=false \
+#    jenkins-persistent
