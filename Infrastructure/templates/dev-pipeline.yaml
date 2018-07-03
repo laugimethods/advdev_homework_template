@@ -5,20 +5,15 @@ items:
 - apiVersion: v1
   kind: BuildConfig
   metadata:
-    annotations:
-      pipeline.alpha.openshift.io/uses: '[{"name": "dev", "namespace": "", "kind": "DeploymentConfig"}]'
     name: dev-pipeline
   spec:
     source:
       git:
         ref: pipeline
-        uri: https://github.com/laugimethods/advdev_homework_template.git/ParksMap
+        uri: https://github.com/laugimethods/advdev_homework_template.git
       type: Git
     strategy:
       type: JenkinsPipeline
       jenkinsPipelineStrategy:
-        jenkinsfilePath: Jenkinsfile
-    triggers:
-    - generic:
-        secret: FiArdDBH
-      type: Generic
+##        path: ParksMap/Jenkinsfile
+        jenkinsfilePath: Infrastructure/templates/Jenkinsfile
