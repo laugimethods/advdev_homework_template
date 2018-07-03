@@ -9,7 +9,7 @@ items:
   spec:
     source:
       git:
-        ref: pipeline
+        ref: master
         uri: https://github.com/laugimethods/advdev_homework_template.git
       type: Git
     strategy:
@@ -17,3 +17,7 @@ items:
       jenkinsPipelineStrategy:
 ##        path: ParksMap/Jenkinsfile
         jenkinsfilePath: Infrastructure/templates/Jenkinsfile
+#    triggers:
+#    - generic:
+#        secret: FiArdDBH
+#      type: Generic
