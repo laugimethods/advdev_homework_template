@@ -13,4 +13,6 @@ echo "Setting up Parks Development Environment in project ${GUID}-parks-dev"
 
 # To be Implemented by Student
 
+# https://docs.openshift.com/container-platform/3.9/dev_guide/builds/build_strategies.html#jenkinsfile
 oc create -f https://github.com/laugimethods/advdev_homework_template/tree/master/Infrastructure/templates/dev-pipeline.yaml
+oc set env buildconfigs/dev-pipeline GUID="$GUID"

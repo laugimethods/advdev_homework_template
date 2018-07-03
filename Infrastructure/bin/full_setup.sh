@@ -28,6 +28,11 @@ setup_nexus () {
 
 setup_sonar () {
   ./setup_sonar.sh "$GUID"
+  next_step setup_dev
+}
+
+setup_dev () {
+  ./setup_dev.sh "$GUID"
   next_step end
 }
 

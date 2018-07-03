@@ -15,8 +15,11 @@ items:
     strategy:
       type: JenkinsPipeline
       jenkinsPipelineStrategy:
-##        path: ParksMap/Jenkinsfile
-        jenkinsfilePath: Infrastructure/templates/Jenkinsfile
+        jenkinsfilePath: ParksMap/Jenkinsfile
+#        jenkinsfilePath: Infrastructure/templates/Jenkinsfile
+#      env:
+#        - name: "GUID"
+#          value: "$GUID"
 #    triggers:
 #    - generic:
 #        secret: FiArdDBH
