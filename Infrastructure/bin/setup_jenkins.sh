@@ -35,12 +35,20 @@ while : ; do
   sleep 5
 done
 
-# Fails when used in conjunction with `setup_projects.sh`: `serviceaccount "jenkins" not found`
+: '
 oc new-app -f ../templates/jenkins.json -p MEMORY_LIMIT=2Gi -p ENABLE_OAUTH=false
-## oc create -f ../templates/jenkins.yml -p MEMORY_LIMIT=2Gi -p ENABLE_OAUTH=false
 
-# See https://docs.openshift.com/container-platform/3.9/using_images/other_images/jenkins.html
-#oc new-app \
-#    -e JENKINS_PASSWORD=${JENKINS_PASSWORD} \
-#    -e OPENSHIFT_ENABLE_OAUTH=false \
-#    jenkins-persistent
+oc create -f ../templates/dev-pipeline.yaml
+oc set env buildconfigs/dev-pipeline GUID="$GUID"
+'
+
+# https://www.opentlc.com/labs/ocp_advanced_development/04_1_CICD_Tools_Solution_Lab.html#_work_with_custom_jenkins_slave_pod
+pushd ../docker/skopeo
+docker build . -t "docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-maven-skopeo:v3.9"
+
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+  "docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-maven-skopeo:v3.9" \
+  skopeo copy --dest-tls-verify=false --dest-creds=$(oc whoami):$(oc whoami -t) \
+  docker-daemon:docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-maven-skopeo:v3.9 \
+  docker://docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-maven-skopeo:v3.9
+popd
