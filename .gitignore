@@ -1,2 +1,3 @@
 Infrastructure/bin/credentials/
 Infrastructure/bin/jenkins_configmap.yaml
+Infrastructure/bin/tmp/jenkins_configmap.yaml

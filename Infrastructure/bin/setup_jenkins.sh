@@ -35,25 +35,33 @@ while : ; do
   sleep 5
 done
 
+: ''
+
 # https://docs.openshift.com/container-platform/3.9/using_images/other_images/jenkins.html#configuring-the-jenkins-kubernetes-plug-in
 ##oc create configmap jenkins-slave --from-file=../templates/jenkins_configmap.yaml
-sed -e "s/\${GUID}/$GUID/" ../templates/jenkins_configmap.tmpl.yaml > ./jenkins_configmap.yaml
-oc create configmap jenkins-slave --from-file=./jenkins_configmap.yaml
+sed -e "s/\${GUID}/$GUID/" ../templates/jenkins_configmap.tmpl.yaml > ./tmp/jenkins_configmap.yaml
+oc create configmap jenkins --from-file=./tmp/jenkins_configmap.yaml
 
 oc new-app -f ../templates/jenkins.json -p MEMORY_LIMIT=2Gi -p ENABLE_OAUTH=false
 
-: '
 oc create -f ../templates/dev-pipeline.yaml
 oc set env buildconfigs/dev-pipeline GUID="$GUID"
 
 # https://www.opentlc.com/labs/ocp_advanced_development/04_1_CICD_Tools_Solution_Lab.html#_work_with_custom_jenkins_slave_pod
 pushd ../docker/skopeo
-docker build . -t "docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-maven-skopeo:v3.9"
-
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-  "docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-maven-skopeo:v3.9" \
-  skopeo copy --dest-tls-verify=false --dest-creds=$(oc whoami):$(oc whoami -t) \
-  docker-daemon:docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-maven-skopeo:v3.9 \
-  docker://docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-maven-skopeo:v3.9
+docker build . -t jenkins-slave-appdev:v3.9
 popd
-'
+
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --name skopeo_bash jenkins-slave-appdev:v3.9 bash
+
+docker exec -it skopeo_bash \
+  skopeo copy --dest-tls-verify=false --dest-creds=$(oc whoami):$(oc whoami -t) \
+    docker-daemon:jenkins-slave-appdev:v3.9 \
+    "docker://docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-appdev:latest"
+
+docker rm -f skopeo_bash
+
+#docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -u 1001 jenkins-slave-appdev:v3.9 \
+#  skopeo copy --dest-tls-verify=false --dest-creds=$(oc whoami):$(oc whoami -t) \
+#    docker-daemon:jenkins-slave-appdev:v3.9 \
+#    "docker://docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-appdev:latest"
