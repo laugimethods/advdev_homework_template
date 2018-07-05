@@ -6,9 +6,9 @@ pipeline {
     }
   }
   stages {
-    stage('ECHO') {
+    stage('Maven') {
       steps {
-        echo "*******************************************************\n"
+        sh 'mvn -version'
       }
     }
   }
