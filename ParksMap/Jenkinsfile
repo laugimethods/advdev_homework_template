@@ -21,6 +21,10 @@ podTemplate(
     // Also copy "../nexus_settings.xml" to your build directory
     // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
 
+    pwd
+    pushd ParksMap
+    mvn build test
+    popd
   }
 }
 
