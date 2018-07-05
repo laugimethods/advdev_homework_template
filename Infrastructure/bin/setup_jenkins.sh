@@ -46,10 +46,6 @@ done
 echo '------ New Jenkins Persistent App ------'
 oc new-app -f ../templates/jenkins.json -p MEMORY_LIMIT=2Gi -p ENABLE_OAUTH=false
 
-echo '------ Create dev-pipeline ------'
-oc create -f ../templates/dev-pipeline.yaml
-oc set env buildconfigs/dev-pipeline GUID="$GUID"
-
 echo '------ Build Skopeo Docker Image ------'
 # https://www.opentlc.com/labs/ocp_advanced_development/04_1_CICD_Tools_Solution_Lab.html#_work_with_custom_jenkins_slave_pod
 pushd ../docker/skopeo
