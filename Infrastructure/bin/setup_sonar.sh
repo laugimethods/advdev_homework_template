@@ -1,4 +1,6 @@
 #!/bin/bash
+source ./utils.sh
+
 # Setup Sonarqube Project
 if [ "$#" -ne 1 ]; then
     echo "Usage:"
@@ -14,13 +16,7 @@ echo "Setting up Sonarqube in project $GUID-sonarqube"
 # Create a new SonarQube instance from docker.io/wkulhanek/sonarqube:6.7.4.
 # Configure SonarQube appropriately for resources, deployment strategy, persistent volumes, readiness and liveness probes.
 
-while : ; do
-  echo "Try to connect to the ${GUID}-sonarqube Project..."
-  oc project ${GUID}-sonarqube
-  [[ "$?" == "1" ]] || break
-  echo "Not Ready Yet. Sleeping 5 seconds."
-  sleep 5
-done
+oc_project "$GUID" 'sonarqube'
 
 # Code to set up the SonarQube project.
 # Ideally just calls a template

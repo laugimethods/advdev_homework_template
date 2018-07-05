@@ -1,4 +1,6 @@
 #!/bin/bash
+source ./utils.sh
+
 # Setup Jenkins Project
 if [ "$#" -ne 4 ]; then
     echo "Usage:"
@@ -27,24 +29,19 @@ echo "Setting up Jenkins in project ${GUID}-jenkins from Git Repo ${REPO} for Cl
 # * GUID: the GUID used in all the projects
 # * CLUSTER: the base url of the cluster used (e.g. na39.openshift.opentlc.com)
 
-while : ; do
-  echo "Try to connect to the ${GUID}-jenkins Project..."
-  oc project ${GUID}-jenkins
-  [[ "$?" == "1" ]] || break
-  echo "Not Ready Yet. Sleeping 5 seconds."
-  sleep 5
-done
+oc_project "$GUID" 'jenkins'
 
 : '
 '
 
+## Not required since the Jenkinsfile are already provinding the required podTemplate definition ##
 # https://docs.openshift.com/container-platform/3.9/using_images/other_images/jenkins.html#configuring-the-jenkins-kubernetes-plug-in
-##oc create configmap jenkins-slave --from-file=../templates/jenkins_configmap.yaml
 #sed -e "s/\${GUID}/$GUID/" ../templates/jenkins_configmap.tmpl.yaml > ./tmp/jenkins_configmap.yaml
 #oc create configmap jenkins --from-file=./tmp/jenkins_configmap.yaml
 
 echo '------ New Jenkins Persistent App ------'
-oc new-app -f ../templates/jenkins.json -p MEMORY_LIMIT=2Gi -p ENABLE_OAUTH=false
+oc new-app -f ../templates/jenkins.json -p MEMORY_LIMIT=2Gi
+  #-p ENABLE_OAUTH=false
 
 echo '------ Build Skopeo Docker Image ------'
 # https://www.opentlc.com/labs/ocp_advanced_development/04_1_CICD_Tools_Solution_Lab.html#_work_with_custom_jenkins_slave_pod

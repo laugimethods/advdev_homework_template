@@ -32,7 +32,7 @@ setup_sonar () {
 }
 
 setup_dev () {
-  ./setup_dev.sh "$GUID"
+  ./setup_dev.sh "$GUID" "$CLUSTER"
   next_step end
 }
 

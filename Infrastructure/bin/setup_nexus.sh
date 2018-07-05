@@ -1,4 +1,6 @@
 #!/bin/bash
+source ./utils.sh
+
 # Setup Nexus Project
 if [ "$#" -ne 1 ]; then
     echo "Usage:"
@@ -15,13 +17,7 @@ echo "Setting up Nexus in project $GUID-nexus"
 #When Nexus is running populate Nexus with the correct repositories.
 #Expose the Container Registry
 
-while : ; do
-  echo "Try to connect to the ${GUID}-nexus Project..."
-  oc project ${GUID}-nexus
-  [[ "$?" == "1" ]] || break
-  echo "Not Ready Yet. Sleeping 5 seconds."
-  sleep 5
-done
+oc_project "$GUID" 'nexus'
 
 # https://docs.openshift.com/container-platform/3.5/dev_guide/app_tutorials/maven_tutorial.html#nexus-setting-up-nexus
 
