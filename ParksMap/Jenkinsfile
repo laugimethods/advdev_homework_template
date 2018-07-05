@@ -1,7 +1,8 @@
 pipeline {
   agent {
-    docker {
-      image 'maven:3.5.0-jdk-8'
+    node {
+      // spin up a skopeo slave pod to run this build on
+      label 'skopeo-pod'
     }
   }
   stages {
