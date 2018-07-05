@@ -35,23 +35,28 @@ while : ; do
   sleep 5
 done
 
-: ''
+: '
+'
 
 # https://docs.openshift.com/container-platform/3.9/using_images/other_images/jenkins.html#configuring-the-jenkins-kubernetes-plug-in
 ##oc create configmap jenkins-slave --from-file=../templates/jenkins_configmap.yaml
-sed -e "s/\${GUID}/$GUID/" ../templates/jenkins_configmap.tmpl.yaml > ./tmp/jenkins_configmap.yaml
-oc create configmap jenkins --from-file=./tmp/jenkins_configmap.yaml
+#sed -e "s/\${GUID}/$GUID/" ../templates/jenkins_configmap.tmpl.yaml > ./tmp/jenkins_configmap.yaml
+#oc create configmap jenkins --from-file=./tmp/jenkins_configmap.yaml
 
+echo 'New Jenkins Persistent App'
 oc new-app -f ../templates/jenkins.json -p MEMORY_LIMIT=2Gi -p ENABLE_OAUTH=false
 
+echo 'Create dev-pipeline'
 oc create -f ../templates/dev-pipeline.yaml
 oc set env buildconfigs/dev-pipeline GUID="$GUID"
 
+echo 'Build Skopeo Docker Image'
 # https://www.opentlc.com/labs/ocp_advanced_development/04_1_CICD_Tools_Solution_Lab.html#_work_with_custom_jenkins_slave_pod
 pushd ../docker/skopeo
 docker build . -t jenkins-slave-appdev:v3.9
 popd
 
+echo 'Deploy the Skopeo Docker Image into the OpenShift Repository'
 docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --name skopeo_bash jenkins-slave-appdev:v3.9 bash
 
 docker exec -it skopeo_bash \
