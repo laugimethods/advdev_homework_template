@@ -102,9 +102,10 @@ objects:
               path: /login
               port: 8080
             initialDelaySeconds: 3
-            timeoutSeconds: 240
+            timeoutSeconds: 800
           resources:
-           limits:
+            limits:
+              cpu: ${CPU_LIMIT}
               memory: ${MEMORY_LIMIT}
           securityContext:
             capabilities: {}
@@ -199,7 +200,11 @@ parameters:
 - description: Maximum amount of memory the container can use.
   displayName: Memory Limit
   name: MEMORY_LIMIT
-  value: 512Mi
+  value: 1Gi
+- description: Maximum amount of CPU the container can use.
+  displayName: CPU limit
+  name: CPU_LIMIT
+  value: "2"
 - description: Volume space available for data, e.g. 512Mi, 2Gi.
   displayName: Volume Capacity
   name: VOLUME_CAPACITY
@@ -212,4 +217,4 @@ parameters:
 - description: Name of the ImageStreamTag to be used for the Jenkins image.
   displayName: Jenkins ImageStreamTag
   name: JENKINS_IMAGE_STREAM_TAG
-  value: jenkins:2
+  value: jenkins:v3.9
