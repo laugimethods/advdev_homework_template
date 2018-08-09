@@ -36,11 +36,13 @@ oc_project "$GUID" 'jenkins'
 
 ## Not required since the Jenkinsfile are already provinding the required podTemplate definition ##
 # https://docs.openshift.com/container-platform/3.9/using_images/other_images/jenkins.html#configuring-the-jenkins-kubernetes-plug-in
-#sed -e "s/\${GUID}/$GUID/" ../templates/jenkins_configmap.tmpl.yaml > ./tmp/jenkins_configmap.yaml
-#oc create configmap jenkins --from-file=./tmp/jenkins_configmap.yaml
+sed -e "s/\${GUID}/$GUID/" ../templates/jenkins_configmap.tmpl.yaml > ./tmp/jenkins_configmap.yaml
+oc create configmap jenkins --from-file=./tmp/jenkins_configmap.yaml
 
 echo '------ New Jenkins Persistent App ------'
-oc new-app -f ../templates/jenkins.json -p MEMORY_LIMIT=2Gi
+## oc edit template -n openshift jenkins-persistent
+oc new-app -f ../templates/jenkins-persistent.yml
+  #jenkins.json -p MEMORY_LIMIT=2Gi
   #-p ENABLE_OAUTH=false
 
 echo '------ Build Skopeo Docker Image ------'
