@@ -17,7 +17,7 @@ setup_projects () {
 }
 
 setup_jenkins () {
-  ./setup_jenkins.sh "$GUID" "$REPO" "$CLUSTER" "${JENKINS_PASSWORD}"
+  ./setup_jenkins.sh "$GUID" "$REPO" "$CLUSTER"
   next_step setup_nexus
 }
 
@@ -32,7 +32,7 @@ setup_sonar () {
 }
 
 setup_dev () {
-  ./setup_dev.sh "$GUID" "$CLUSTER"
+  ./setup_dev.sh "$GUID"
   next_step end
 }
 

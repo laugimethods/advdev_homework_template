@@ -20,16 +20,14 @@ echo "Setting up Parks Development Environment in project ${GUID}-parks-dev"
 echo '------ Setting up MongoDB ------'
 oc_project "$GUID" 'parks-dev'
 
-:'
-. credentials/mongodb_dev.sh
+source ./credentials/mongodb_dev.sh
 # https://docs.openshift.com/container-platform/3.9/using_images/db_images/mongodb.html
 oc new-app \
-#    -e MONGODB_USER="$MONGODB_USER_DEV" \
-#    -e MONGODB_PASSWORD="$MONGODB_PASSWORD_DEV" \
-#    -e MONGODB_DATABASE="$MONGODB_DATABASE_DEV" \
-#    -e MONGODB_ADMIN_PASSWORD="$MONGODB_ADMIN_PASSWORD_DEV" \
+    -p MONGODB_USER="$MONGODB_USER_DEV" \
+    -p MONGODB_PASSWORD="$MONGODB_PASSWORD_DEV" \
+    -p MONGODB_DATABASE="$MONGODB_DATABASE_DEV" \
+    -p MONGODB_ADMIN_PASSWORD="$MONGODB_ADMIN_PASSWORD_DEV" \
     mongodb-ephemeral
-'
 
 echo '------ Create dev-pipeline ------'
 oc_project "$GUID" 'jenkins'
