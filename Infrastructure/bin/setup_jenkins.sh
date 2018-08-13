@@ -12,7 +12,8 @@ fi
 GUID=$1
 REPO=$2
 CLUSTER=$3
-JENKINS_PASSWORD=$4
+# JENKINS_PASSWORD=$4
+
 echo "Setting up Jenkins in project ${GUID}-jenkins from Git Repo ${REPO} for Cluster ${CLUSTER}"
 
 # Code to set up the Jenkins project to execute the
