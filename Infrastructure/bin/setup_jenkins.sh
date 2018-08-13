@@ -2,9 +2,9 @@
 source ./utils.sh
 
 # Setup Jenkins Project
-if [ "$#" -ne 4 ]; then
+if [ "$#" -ne 3 ]; then
     echo "Usage:"
-    echo "  $0 GUID REPO CLUSTER JENKINS_PASSWORD"
+    echo "  $0 GUID REPO CLUSTER"
     echo "  Example: $0 wkha https://github.com/wkulhanek/ParksMap na39.openshift.opentlc.com"
     exit 1
 fi
@@ -41,7 +41,7 @@ oc create configmap jenkins --from-file=./tmp/jenkins_configmap.yaml
 
 echo '------ New Jenkins Persistent App ------'
 ## oc edit template -n openshift jenkins-persistent
-oc new-app -f ../templates/jenkins-persistent.yml
+oc new-app -p ENABLE_OAUTH=false -f ../templates/jenkins-persistent.yml
   #jenkins.json -p MEMORY_LIMIT=2Gi
   #-p ENABLE_OAUTH=false
 

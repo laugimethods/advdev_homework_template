@@ -2,14 +2,15 @@
 source ./utils.sh
 
 # Setup Development Project
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 1 ]; then
     echo "Usage:"
-    echo "  $0 GUID CLUSTER"
+    echo "  $0 GUID"
     exit 1
 fi
 
 GUID=$1
-CLUSTER=$2
+CLUSTER="na39.openshift.opentlc.com"
+
 echo "Setting up Parks Development Environment in project ${GUID}-parks-dev"
 
 # Code to set up the parks development project.
