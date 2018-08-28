@@ -32,37 +32,20 @@ echo "Setting up Jenkins in project ${GUID}-jenkins from Git Repo ${REPO} for Cl
 
 oc_project "$GUID" 'jenkins'
 
-: '
-'
+echo '------ Create the Jenkins App ------'
 
-## Not required since the Jenkinsfile are already provinding the required podTemplate definition ##
-# https://docs.openshift.com/container-platform/3.9/using_images/other_images/jenkins.html#configuring-the-jenkins-kubernetes-plug-in
-sed -e "s/\${GUID}/$GUID/" ../templates/jenkins_configmap.tmpl.yaml > ./tmp/jenkins_configmap.yaml
-oc create configmap jenkins --from-file=./tmp/jenkins_configmap.yaml
+oc new-app jenkins-persistent --param ENABLE_OAUTH=true --param MEMORY_LIMIT=2Gi --param VOLUME_CAPACITY=4Gi -n "${GUID}-jenkins"
 
-echo '------ New Jenkins Persistent App ------'
-## oc edit template -n openshift jenkins-persistent
-oc new-app -p ENABLE_OAUTH=false -f ../templates/jenkins-persistent.yml
-  #jenkins.json -p MEMORY_LIMIT=2Gi
-  #-p ENABLE_OAUTH=false
+: ''
 
 echo '------ Build Skopeo Docker Image ------'
-# https://www.opentlc.com/labs/ocp_advanced_development/04_1_CICD_Tools_Solution_Lab.html#_work_with_custom_jenkins_slave_pod
-pushd ../docker/skopeo
-docker build . -t jenkins-slave-appdev:v3.9
-popd
+# https://docs.openshift.com/container-platform/3.9/dev_guide/builds/build_output.html
 
-echo '------ Deploy the Skopeo Docker Image into the OpenShift Repository ------'
-docker run -d --rm -it -v /var/run/docker.sock:/var/run/docker.sock --name skopeo_bash jenkins-slave-appdev:v3.9 bash
+oc create imagestream jenkins-slave-appdev
+oc create -f ../templates/BuildConfig_Skopeo
+oc start-build skopeo-build
 
-docker exec -it skopeo_bash \
-  skopeo copy --dest-tls-verify=false --dest-creds=$(oc whoami):$(oc whoami -t) \
-    docker-daemon:jenkins-slave-appdev:v3.9 \
-    "docker://docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-appdev:latest"
+echo '------- Create BuildConfig_MLBParks ---------'
+# https://docs.openshift.com/container-platform/3.9/dev_guide/builds/build_strategies.html#jenkinsfile
 
-docker rm -f skopeo_bash
-
-#docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -u 1001 jenkins-slave-appdev:v3.9 \
-#  skopeo copy --dest-tls-verify=false --dest-creds=$(oc whoami):$(oc whoami -t) \
-#    docker-daemon:jenkins-slave-appdev:v3.9 \
-#    "docker://docker-registry-default.apps.na39.openshift.opentlc.com/${GUID}-jenkins/jenkins-slave-appdev:latest"
+oc create -f ../templates/BuildConfig_MLBParks
