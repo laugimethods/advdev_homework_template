@@ -47,5 +47,6 @@ oc start-build skopeo-build
 
 echo '------- Create BuildConfig_MLBParks ---------'
 # https://docs.openshift.com/container-platform/3.9/dev_guide/builds/build_strategies.html#jenkinsfile
+# https://docs.openshift.com/container-platform/3.9/dev_guide/builds/build_environment.html#using-build-fields-as-environment-variables
 
-oc create -f ../templates/BuildConfig_MLBParks
+sed "s/\${GUID}/${GUID}/g;s/\${CLUSTER}/${CLUSTER}/g" ../templates/BuildConfig_MLBParks | oc create -f -

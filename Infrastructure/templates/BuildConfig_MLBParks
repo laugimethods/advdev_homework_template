@@ -9,3 +9,8 @@ spec:
   strategy:
     jenkinsPipelineStrategy:
       jenkinsfilePath: MLBParks/Jenkinsfile
+      env:
+        - name: GUID
+          value: "${GUID}"
+        - name: CLUSTER
+          value: "${CLUSTER}"
