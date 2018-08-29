@@ -1,45 +1,39 @@
-// Jenkinsfile for ParksMap
-
 pipeline {
   agent {
     kubernetes {
-      label 'skopeo-pod'
+      label 'mypod'
       defaultContainer 'jnlp'
       yaml """
 apiVersion: v1
 kind: Pod
+metadata:
+  labels:
+    some-label: some-label-value
 spec:
   containers:
-  - name: skopeo
-    image: "docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev"
-    resourceRequestMemory: "1Gi"
-    resourceLimitMemory: "2Gi"
+  - name: maven
+    image: maven:alpine
+    command:
+    - cat
+    tty: true
+  - name: busybox
+    image: busybox
+    command:
+    - cat
+    tty: true
 """
     }
   }
   stages {
-    stage('Maven') {
+    stage('Run maven') {
       steps {
-        container('skopeo') {
+        container('maven') {
           sh 'mvn -version'
-          sh 'skopeo --version'
+        }
+        container('busybox') {
+          sh '/bin/busybox'
         }
       }
     }
   }
-}
-
-// Convenience Functions to read variables from the pom.xml
-// Do not change anything below this line.
-def getVersionFromPom(pom) {
-  def matcher = readFile(pom) =~ '<version>(.+)</version>'
-  matcher ? matcher[0][1] : null
-}
-def getGroupIdFromPom(pom) {
-  def matcher = readFile(pom) =~ '<groupId>(.+)</groupId>'
-  matcher ? matcher[0][1] : null
-}
-def getArtifactIdFromPom(pom) {
-  def matcher = readFile(pom) =~ '<artifactId>(.+)</artifactId>'
-  matcher ? matcher[0][1] : null
 }
