@@ -3,6 +3,7 @@ pipeline {
     kubernetes {
       cloud "openshift"
       label 'skopeo-pod'
+      defaultContainer 'skopeo'
       containerTemplate {
         name 'skopeo'
         image 'docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev'
@@ -12,8 +13,7 @@ pipeline {
   stages {
     stage('Run maven') {
       steps {
-        container('jnlp') {
-          sh 'mvn -version'
+        container('skopeo') {
           sh 'skopeo --version'
         }
       }
