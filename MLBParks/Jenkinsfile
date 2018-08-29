@@ -34,13 +34,11 @@ pipeline {
           // You need to build the application in directory `MLBParks`.
           // Also copy "../nexus_settings.xml" to your build directory
           // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
-          sh 'cd MLBParks'
-          sh 'pwd'
-          sh "sed -e 's/\\GUID/${GUID}/' ../nexus_settings.xml > ./nexus_settings.xml"
-          sh 'ls -als'
-          sh 'cat ./nexus_settings.xml'
-          sh "$maven -s ./nexus_settings.xml build"
-//          sh 'popd'
+          sh "sed -e 's/\\GUID/${GUID}/' ./nexus_settings.xml > ./MLBParks/nexus_settings.xml"
+          dir('MLBParks') {
+            sh 'cat ./nexus_settings.xml'
+            sh "$maven -s ./nexus_settings.xml clean install -DskipTests=true"
+          }
         }
       }
     }
