@@ -11,20 +11,19 @@ podTemplate(
       resourceLimitMemory: "2Gi"
     )
   ]
-)
-
-pipeline {
-  agent {
-    node {
-      // spin up a skopeo slave pod to run this build on
-      label 'skopeo-pod'
+) { pipeline {
+    agent {
+      node {
+        // spin up a skopeo slave pod to run this build on
+        label 'skopeo-pod'
+      }
     }
-  }
-  stages {
-    stage('Maven') {
-      steps {
-        sh 'mvn -version'
-        sh 'skopeo --version'
+    stages {
+      stage('Maven') {
+        steps {
+          sh 'mvn -version'
+          sh 'skopeo --version'
+        }
       }
     }
   }
