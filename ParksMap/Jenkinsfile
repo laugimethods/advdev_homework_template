@@ -3,17 +3,14 @@
 pipeline {
   agent {
     kubernetes {
-      label 'mypod'
+      label 'skopeo-pod'
       defaultContainer 'jnlp'
       yaml """
 apiVersion: v1
 kind: Pod
-metadata:
-  labels:
-    label: "skopeo-pod"
 spec:
   containers:
-  - name: jnlp
+  - name: skopeo
     image: "docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev"
     resourceRequestMemory: "1Gi"
     resourceLimitMemory: "2Gi"
@@ -23,7 +20,7 @@ spec:
   stages {
     stage('Maven') {
       steps {
-        container('jnlp') {
+        container('skopeo') {
           sh 'mvn -version'
           sh 'skopeo --version'
         }
