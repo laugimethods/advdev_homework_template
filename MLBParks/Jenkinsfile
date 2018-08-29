@@ -10,7 +10,7 @@ pipeline {
         resourceRequestMemory '1Gi'
         resourceLimitMemory '2Gi'
         ttyEnabled true
-        command 'cat'
+        command 'bash'
       }
     }
   }
