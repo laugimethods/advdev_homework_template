@@ -35,8 +35,8 @@ pipeline {
           // Also copy "../nexus_settings.xml" to your build directory
           // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
           sh 'pushd MLBParks'
-          sh "sed -e 's/\\GUID/${GUID}/' ../nexus_settings.xml > ./nexus_settings.xml"
           sh 'pwd'
+          sh "sed -e 's/\\GUID/${GUID}/' ../nexus_settings.xml > ./nexus_settings.xml"
           sh 'ls -als'
           sh 'cat ./nexus_settings.xml'
           sh "$maven -s ./nexus_settings.xml build"
