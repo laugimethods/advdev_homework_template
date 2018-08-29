@@ -1,25 +1,37 @@
 // Jenkinsfile for MLBParks
-podTemplate(
-  label: "skopeo-pod",
-  cloud: "openshift",
-  inheritFrom: "maven",
-  containers: [
-    containerTemplate(
-      name: "jnlp",
-      image: "docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev",
-      resourceRequestMemory: "1Gi",
-      resourceLimitMemory: "2Gi"
-    )
-  ]
-) {
-  node('skopeo-pod') {
-    echo "GUID: ${GUID}"
-    echo "CLUSTER: ${CLUSTER}"
+pipeline {
+  agent {
+    kubernetes {
+      cloud "openshift"
+      label 'skopeo-pod'
+      containerTemplate {
+        name 'skopeo'
+        image 'docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev'
+        resourceRequestMemory "1Gi"
+        resourceLimitMemory "2Gi"
+      }
+    }
+  }
+  stages {
+    stage('Run Skopeo') {
+      steps {
+        container('jnlp') {
+          echo "GUID: ${GUID}"
+          echo "CLUSTER: ${CLUSTER}"
 
-    // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
-    // You need to build the application in directory `MLBParks`.
-    // Also copy "../nexus_settings.xml" to your build directory
-    // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
+          // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
+          // You need to build the application in directory `MLBParks`.
+          // Also copy "../nexus_settings.xml" to your build directory
+          // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
+
+          sh 'skopeo --version'
+          sh 'mvn -version'
+
+          sh 'pwd'
+          sh 'ls'
+        }
+      }
+    }
   }
 }
 
