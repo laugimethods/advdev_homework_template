@@ -2,19 +2,19 @@ pipeline {
   agent {
     kubernetes {
       cloud "openshift"
-      label 'skopeo-pod'
+      label 'skopeo-pod2'
       containerTemplate {
-        name 'skopeo'
-        image 'docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev'
+        name 'skopeo2'
+        image 'jenkins-slave-appdev'
         resourceRequestMemory "1Gi"
         resourceLimitMemory "2Gi"
       }
     }
   }
   stages {
-    stage('Run Skopeo') {
+    stage('Run Skopeo 2') {
       steps {
-        container('jnlp') {
+        container('skopeo2') {
           sh 'skopeo --version'
         }
       }
