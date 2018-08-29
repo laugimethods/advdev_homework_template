@@ -4,6 +4,7 @@ pipeline {
     kubernetes {
       cloud "openshift"
       label 'skopeo-pod'
+      inheritFrom "maven"
       containerTemplate {
         name 'jnlp'
         image "docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev"
