@@ -55,4 +55,5 @@ echo '------- Create BuildConfig_Nationalparks ---------'
 sed "s/\${GUID}/${GUID}/g;s/\${CLUSTER}/${CLUSTER}/g" ../templates/BuildConfig_Nationalparks | oc create -f -
 
 echo '------- Create BuildConfig_ParksMap ---------'
+# See https://github.com/jenkinsci/kubernetes-plugin#declarative-pipeline
 sed "s/\${GUID}/${GUID}/g;s/\${CLUSTER}/${CLUSTER}/g" ../templates/BuildConfig_ParksMap | oc create -f -
