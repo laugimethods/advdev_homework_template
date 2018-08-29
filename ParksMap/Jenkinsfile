@@ -15,16 +15,29 @@ pipeline {
     ]
   )
   agent {
-    node {
-      // spin up a skopeo slave pod to run this build on
-      label 'skopeo-pod'
+    kubernetes {
+      label 'mypod'
+      defaultContainer 'jnlp'
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    label: "skopeo-pod"
+spec:
+  containers:
+  - name: jnlp
+    image: "docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev"
+"""
     }
   }
   stages {
     stage('Maven') {
       steps {
-        sh 'mvn -version'
-        sh 'skopeo --version'
+        container('jnlp') {
+          sh 'mvn -version'
+          sh 'skopeo --version'
+        }
       }
     }
   }
