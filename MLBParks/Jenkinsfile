@@ -23,9 +23,9 @@ pipeline {
           // Also copy "../nexus_settings.xml" to your build directory
           // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
           sh 'skopeo --version'
-          sh 'mvn -version'
-          sh 'pwd'
-          sh 'ls'
+          mvn -version
+          pwd
+          ls
         }
       }
     }
