@@ -3,15 +3,15 @@ pipeline {
   agent {
     kubernetes {
       cloud "openshift"
-      label 'skopeo-pod'
+      label 'skopeo-pod_x2'
       inheritFrom "maven"
       containerTemplate {
         name 'jnlp'
         image "docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev"
         resourceRequestMemory '1Gi'
         resourceLimitMemory '2Gi'
-        ttyEnabled true
-        command 'cat'
+//        ttyEnabled true
+//        command 'cat'
       }
     }
   }
@@ -25,7 +25,7 @@ pipeline {
           // You need to build the application in directory `MLBParks`.
           // Also copy "../nexus_settings.xml" to your build directory
           // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
-          // sh 'skopeo --version'
+          sh 'skopeo --version'
           sh "mvn -version"
           sh 'pwd'
           sh 'ls'
