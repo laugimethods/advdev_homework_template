@@ -4,13 +4,14 @@ pipeline {
     kubernetes {
       cloud "openshift"
       label 'skopeo-pod'
+      inheritFrom "maven"
       containerTemplate {
         name 'jnlp'
         image "docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev"
         resourceRequestMemory '1Gi'
         resourceLimitMemory '2Gi'
         ttyEnabled true
-//        command 'bash'
+        command 'cat'
       }
     }
   }
