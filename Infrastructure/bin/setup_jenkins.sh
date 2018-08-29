@@ -36,6 +36,9 @@ echo '------ Create the Jenkins App ------'
 
 oc new-app jenkins-persistent --param ENABLE_OAUTH=true --param MEMORY_LIMIT=2Gi --param VOLUME_CAPACITY=4Gi -n "${GUID}-jenkins"
 
+sed -e "s/\${GUID}/$GUID/" ../templates/jenkins_configmap.yaml > ./tmp/jenkins_configmap.yaml
+oc create configmap jenkins --from-file=./tmp/jenkins_configmap.yaml
+
 : ''
 
 echo '------ Build Skopeo Docker Image ------'

@@ -9,17 +9,17 @@ data:
   template1: |-
     <org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
       <inheritFrom></inheritFrom>
-      <name>skopeo-pod</name>
+      <name>skopeo-podX</name>
       <instanceCap>2147483647</instanceCap>
       <idleMinutes>0</idleMinutes>
-      <label>skopeo-pod</label>
+      <label>skopeo-podX</label>
       <serviceAccount>jenkins</serviceAccount>
       <nodeSelector></nodeSelector>
       <volumes/>
       <containers>
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
-          <name>jnlp</name>
-          <image>docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-maven-skopeo:v3.9</image>
+          <name>skopeoX</name>
+          <image>docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev:latest</image>
           <privileged>false</privileged>
           <alwaysPullImage></alwaysPullImage>
           <workingDir>/tmp</workingDir>
