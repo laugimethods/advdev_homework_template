@@ -5,9 +5,7 @@ pipeline {
       label 'skopeo-pod'
       containerTemplate {
         name 'skopeo'
-        image 'maven:3.3.9-jdk-8-alpine'
-        resourceRequestMemory "1Gi"
-        resourceLimitMemory "2Gi"
+        image 'docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev'
       }
     }
   }
