@@ -1,29 +1,30 @@
 // Jenkinsfile for ParksMap
-podTemplate(
-  label: "skopeo-pod",
-  cloud: "openshift",
-  inheritFrom: "maven",
-  containers: [
-    containerTemplate(
-      name: "jnlp",
-      image: "docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev",
-      resourceRequestMemory: "1Gi",
-      resourceLimitMemory: "2Gi"
-    )
-  ]
-) { pipeline {
-    agent {
-      node {
-        // spin up a skopeo slave pod to run this build on
-        label 'skopeo-pod'
-      }
+
+pipeline {
+  podTemplate(
+    label: "skopeo-pod",
+    cloud: "openshift",
+    inheritFrom: "maven",
+    containers: [
+      containerTemplate(
+        name: "jnlp",
+        image: "docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev",
+        resourceRequestMemory: "1Gi",
+        resourceLimitMemory: "2Gi"
+      )
+    ]
+  )
+  agent {
+    node {
+      // spin up a skopeo slave pod to run this build on
+      label 'skopeo-pod'
     }
-    stages {
-      stage('Maven') {
-        steps {
-          sh 'mvn -version'
-          sh 'skopeo --version'
-        }
+  }
+  stages {
+    stage('Maven') {
+      steps {
+        sh 'mvn -version'
+        sh 'skopeo --version'
       }
     }
   }
