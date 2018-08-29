@@ -50,3 +50,9 @@ echo '------- Create BuildConfig_MLBParks ---------'
 # https://docs.openshift.com/container-platform/3.9/dev_guide/builds/build_environment.html#using-build-fields-as-environment-variables
 
 sed "s/\${GUID}/${GUID}/g;s/\${CLUSTER}/${CLUSTER}/g" ../templates/BuildConfig_MLBParks | oc create -f -
+
+echo '------- Create BuildConfig_Nationalparks ---------'
+sed "s/\${GUID}/${GUID}/g;s/\${CLUSTER}/${CLUSTER}/g" ../templates/BuildConfig_Nationalparks | oc create -f -
+
+echo '------- Create BuildConfig_ParksMap ---------'
+sed "s/\${GUID}/${GUID}/g;s/\${CLUSTER}/${CLUSTER}/g" ../templates/BuildConfig_ParksMap | oc create -f -
