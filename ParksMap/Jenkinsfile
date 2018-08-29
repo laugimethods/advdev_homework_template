@@ -2,23 +2,23 @@ pipeline {
   agent {
     kubernetes {
       cloud "openshift"
-      label 'mypod'
+      label 'skopeo-pod'
       containerTemplate {
-        name 'maven'
-        image 'maven:3.3.9-jdk-8-alpine'
-        ttyEnabled true
-        command 'cat'
+        name 'skopeo'
+        image 'docker-registry.default.svc:5000/${GUID}-jenkins/jenkins-slave-appdev'
+        resourceRequestMemory "1Gi"
+        resourceLimitMemory "2Gi"
+#        ttyEnabled true
+#        command 'cat'
       }
     }
   }
   stages {
     stage('Run maven') {
       steps {
-        container('maven') {
+        container('skopeo') {
           sh 'mvn -version'
-        }
-        container('busybox') {
-          sh '/bin/busybox'
+          sh 'skopeo --version'
         }
       }
     }
