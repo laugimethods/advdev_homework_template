@@ -1,4 +1,5 @@
 // Jenkinsfile for MLBParks
+def maven = '/opt/rh/rh-maven33/root/usr/bin/mvn'
 pipeline {
   agent {
     kubernetes {
@@ -24,7 +25,7 @@ pipeline {
           // Also copy "../nexus_settings.xml" to your build directory
           // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
           sh 'skopeo --version'
-          sh '/opt/rh/rh-maven33/root/usr/bin/mvn -version'
+          sh "$maven -version"
           sh 'pwd'
           sh 'ls'
         }
