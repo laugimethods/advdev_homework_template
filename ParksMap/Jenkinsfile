@@ -1,3 +1,5 @@
+# https://github.com/jenkinsci/kubernetes-plugin#declarative-pipeline
+
 pipeline {
   agent {
     kubernetes {
