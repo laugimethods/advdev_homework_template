@@ -1,6 +1,12 @@
 pipeline {
+  agent {
+    kubernetes {
+      cloud "openshift"
+      label 'skopeo-podX'
+    }
+  }
   stages {
-    stage('Run Skopeo 3') {
+    stage('Run Skopeo X') {
       steps {
         container('skopeoX') {
           sh 'skopeo --version'
