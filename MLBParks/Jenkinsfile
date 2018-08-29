@@ -15,19 +15,32 @@ pipeline {
     }
   }
   stages {
-    stage('Run Skopeo') {
+    stage('Initial Settings') {
       steps {
         container('jnlp') {
           echo "GUID: ${GUID}"
           echo "CLUSTER: ${CLUSTER}"
-          // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
-          // You need to build the application in directory `MLBParks`.
-          // Also copy "../nexus_settings.xml" to your build directory
-          // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
           sh 'skopeo --version'
           sh "$maven -version"
           sh 'pwd'
           sh 'ls'
+        }
+      }
+    }
+    stage('Maven Build') {
+      steps {
+        container('jnlp') {
+          // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
+          // You need to build the application in directory `MLBParks`.
+          // Also copy "../nexus_settings.xml" to your build directory
+          // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
+          sh 'pushd MLBParks'
+          sh "sed -e s/\GUID/${GUID}/ ../nexus_settings.xml > ./nexus_settings.xml"
+          sh 'pwd'
+          sh 'ls -als'
+          sh 'cat ./nexus_settings.xml'
+          sh "$maven -s ./nexus_settings.xml build"
+          sh 'popd'
         }
       }
     }
