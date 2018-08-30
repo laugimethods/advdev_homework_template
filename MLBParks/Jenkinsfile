@@ -95,7 +95,7 @@ pipeline {
             container('jnlp') {
               dir('MLBParks') {
                 echo "Building OpenShift container image tasks:${devTag}"
-
+sh 'ls -als ./target/'
                 // Start Binary Build in OpenShift using the file we just published
                 // The filename is openshift-tasks.war in the 'target' directory of your current
                 // Jenkins workspace
