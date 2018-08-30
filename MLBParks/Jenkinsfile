@@ -36,11 +36,19 @@ pipeline {
           // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
           sh "sed -e 's/\\GUID/${GUID}/' ./nexus_settings.xml > ./MLBParks/nexus_settings.xml"
           dir('MLBParks') {
-            sh 'cat ./nexus_settings.xml'
             sh "$maven -s ./nexus_settings.xml clean install -DskipTests=true"
           }
         }
       }
+      stage('Unit Tests & Sonar') {
+        steps {
+          container('jnlp') {
+            dir('MLBParks') {
+              sh "$maven -s ./nexus_settings.xml test"
+              sh "$maven sonar:sonar -s ./nexus_settings.xml -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER}"
+            }
+          }
+        }
     }
   }
 }
