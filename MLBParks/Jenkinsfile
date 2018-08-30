@@ -38,17 +38,18 @@ pipeline {
           }
           echo "devTag: ${devTag}"
           echo "prodTag: ${prodTag}"
+
+          // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
+          // You need to build the application in directory `MLBParks`.
+          // Also copy "../nexus_settings.xml" to your build directory
+          // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
+          sh "sed -e 's/\\GUID/${GUID}/' ./nexus_settings.xml > ./MLBParks/nexus_settings.xml"
         }
       }
     }
     stage('Maven Build') {
       steps {
         container('jnlp') {
-          // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
-          // You need to build the application in directory `MLBParks`.
-          // Also copy "../nexus_settings.xml" to your build directory
-          // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
-          sh "sed -e 's/\\GUID/${GUID}/' ./nexus_settings.xml > ./MLBParks/nexus_settings.xml"
           dir('MLBParks') {
             sh "$maven clean install -DskipTests=true"
           }
@@ -77,31 +78,37 @@ pipeline {
         }
       }
     }
-    stage('Publish to Nexus') {
-      steps {
-        container('jnlp') {
-          dir('MLBParks') {
-            sh "$maven deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.apps.${CLUSTER}/repository/releases"
+    stage('Deployment') {
+      parallel {
+        stage('Publish WAR to Nexus') {
+          steps {
+            container('jnlp') {
+              dir('MLBParks') {
+                echo "Publish to Nexus"
+                sh "$maven deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3-${GUID}-nexus.apps.${CLUSTER}/repository/releases"
+              }
+            }
+          }
+        }
+        stage('Build and Tag OpenShift Image') {
+          steps {
+            container('jnlp') {
+              dir('MLBParks') {
+                echo "Building OpenShift container image tasks:${devTag}"
+
+                // Start Binary Build in OpenShift using the file we just published
+                // The filename is openshift-tasks.war in the 'target' directory of your current
+                // Jenkins workspace
+                sh "oc start-build tasks --follow --from-file=./target/openshift-tasks.war -n ${GUID}-tasks-dev"
+
+                // Tag the image using the devTag
+                openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: '${GUID}-tasks-dev', namespace: '${GUID}-tasks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false'
+              }
+            }
           }
         }
       }
     }
-    stage('Build and Tag OpenShift Image') {
-      steps {
-        container('jnlp') {
-          echo "Building OpenShift container image tasks:${devTag}"
-
-          // Start Binary Build in OpenShift using the file we just published
-          // The filename is openshift-tasks.war in the 'target' directory of your current
-          // Jenkins workspace
-          sh "oc start-build tasks --follow --from-file=./target/openshift-tasks.war -n ${GUID}-tasks-dev"
-
-          // Tag the image using the devTag
-          openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: '${GUID}-tasks-dev', namespace: '${GUID}-tasks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false'
-        }
-      }
-    }
-
   }
 }
 
