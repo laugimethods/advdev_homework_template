@@ -1,5 +1,6 @@
 // Jenkinsfile for MLBParks
 def maven = '/opt/rh/rh-maven33/root/usr/bin/mvn'
+
 pipeline {
   agent {
     kubernetes {
@@ -15,11 +16,25 @@ pipeline {
     }
   }
   stages {
+    // The following variables need to be defined at the top level
+    // and not inside the scope of a stage - otherwise they would not
+    // be accessible from other stages.
+    // Extract version and other properties from the pom.xml
+    def groupId    = getGroupIdFromPom("./MLBParks/pom.xml")
+    def artifactId = getArtifactIdFromPom("./MLBParks/pom.xml")
+    def version    = getVersionFromPom("./MLBParks/pom.xml")
+    // Set the tag for the development image: version + build number
+    def devTag  = "${version}-${BUILD_NUMBER}"
+    // Set the tag for the production image: version
+    def prodTag = "${version}"
+
     stage('Initial Settings') {
       steps {
         container('jnlp') {
           echo "GUID: ${GUID}"
           echo "CLUSTER: ${CLUSTER}"
+          echo "devTag: ${devTag}"
+          echo "prodTag: ${prodTag}"
           sh 'skopeo --version'
           sh "$maven -version"
           sh 'pwd'
@@ -56,7 +71,7 @@ pipeline {
           steps {
             container('jnlp') {
               dir('MLBParks') {
-                sh "$maven sonar:sonar -s ./nexus_settings.xml -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER}"
+                sh "$maven sonar:sonar -s ./nexus_settings.xml -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}" 
               }
             }
           }
