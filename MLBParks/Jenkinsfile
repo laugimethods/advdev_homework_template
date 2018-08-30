@@ -28,13 +28,13 @@ pipeline {
           // https://stackoverflow.com/questions/44099851/how-do-i-pass-variables-between-stages-in-a-declarative-jenkins-pipeline
           script {
             // Extract version and other properties from the pom.xml
-            def groupId    = getGroupIdFromPom("./MLBParks/pom.xml")
-            def artifactId = getArtifactIdFromPom("./MLBParks/pom.xml")
-            def version    = getVersionFromPom("./MLBParks/pom.xml")
+            groupId    = getGroupIdFromPom("./MLBParks/pom.xml")
+            artifactId = getArtifactIdFromPom("./MLBParks/pom.xml")
+            version    = getVersionFromPom("./MLBParks/pom.xml")
             // Set the tag for the development image: version + build number
-            def devTag  = "${version}-${BUILD_NUMBER}"
+            devTag  = "${version}-${BUILD_NUMBER}"
             // Set the tag for the production image: version
-            def prodTag = "${version}"
+            prodTag = "${version}"
           }
           echo "devTag: ${devTag}"
           echo "prodTag: ${prodTag}"
