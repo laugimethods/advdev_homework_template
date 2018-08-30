@@ -1,5 +1,5 @@
 // Jenkinsfile for MLBParks
-def maven = '/opt/rh/rh-maven33/root/usr/bin/mvn'
+def maven = '/opt/rh/rh-maven33/root/usr/bin/mvn -s ./nexus_settings.xml'
 
 pipeline {
   agent {
@@ -50,7 +50,7 @@ pipeline {
           // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
           sh "sed -e 's/\\GUID/${GUID}/' ./nexus_settings.xml > ./MLBParks/nexus_settings.xml"
           dir('MLBParks') {
-            sh "$maven -s ./nexus_settings.xml clean install -DskipTests=true"
+            sh "$maven clean install -DskipTests=true"
           }
         }
       }
@@ -61,7 +61,7 @@ pipeline {
           steps {
             container('jnlp') {
               dir('MLBParks') {
-                sh "$maven -s ./nexus_settings.xml test"
+                sh "$maven test"
               }
             }
           }
@@ -70,13 +70,38 @@ pipeline {
           steps {
             container('jnlp') {
               dir('MLBParks') {
-                sh "$maven sonar:sonar -s ./nexus_settings.xml -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+                sh "$maven sonar:sonar -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
               }
             }
           }
         }
       }
     }
+    stage('Publish to Nexus') {
+      steps {
+        container('jnlp') {
+          dir('MLBParks') {
+            sh "$maven deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3.${GUID}-nexus.apps.${CLUSTER}/repository/releases"
+          }
+        }
+      }
+    }
+    stage('Build and Tag OpenShift Image') {
+      steps {
+        container('jnlp') {
+          echo "Building OpenShift container image tasks:${devTag}"
+
+          // Start Binary Build in OpenShift using the file we just published
+          // The filename is openshift-tasks.war in the 'target' directory of your current
+          // Jenkins workspace
+          sh "oc start-build tasks --follow --from-file=./target/openshift-tasks.war -n ${GUID}-tasks-dev"
+
+          // Tag the image using the devTag
+          openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: '${GUID}-tasks-dev', namespace: '${GUID}-tasks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false'
+        }
+      }
+    }
+
   }
 }
 
