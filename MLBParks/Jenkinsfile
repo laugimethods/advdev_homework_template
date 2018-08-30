@@ -40,13 +40,13 @@ pipeline {
           }
         }
       }
-      stage('Unit Tests & Sonar') {
-        steps {
-          container('jnlp') {
-            dir('MLBParks') {
-              sh "$maven -s ./nexus_settings.xml test"
-              sh "$maven sonar:sonar -s ./nexus_settings.xml -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER}"
-            }
+    }
+    stage('Unit Tests & Sonar') {
+      steps {
+        container('jnlp') {
+          dir('MLBParks') {
+            sh "$maven -s ./nexus_settings.xml test"
+            sh "$maven sonar:sonar -s ./nexus_settings.xml -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER}"
           }
         }
       }
