@@ -49,7 +49,7 @@ objects:
         tags: sonarqube
       from:
         kind: DockerImage
-        name: openshiftdemos/sonarqube:${SONARQUBE_VERSION}
+        name: ${SONARQUBE_IMAGE}:${SONARQUBE_VERSION}
 #        name: sonarqube:${SONARQUBE_VERSION}
       importPolicy: {}
       name: ${SONARQUBE_VERSION}
@@ -269,6 +269,10 @@ objects:
       requests:
         storage: ${SONAR_VOLUME_CAPACITY}
 parameters:
+- displayName: SonarQube image
+  value: "openshiftdemos/sonarqube"
+  name: SONARQUBE_IMAGE
+  required: true
 - displayName: SonarQube version
   value: "6.7"
   name: SONARQUBE_VERSION
