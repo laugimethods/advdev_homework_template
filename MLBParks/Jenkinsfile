@@ -95,11 +95,10 @@ pipeline {
             container('jnlp') {
               dir('MLBParks') {
                 echo "Building OpenShift container image tasks:${devTag}"
-sh 'ls -als ./target/'
                 // Start Binary Build in OpenShift using the file we just published
                 // The filename is openshift-tasks.war in the 'target' directory of your current
                 // Jenkins workspace
-                sh "oc start-build tasks --follow --from-file=./target/openshift-tasks.war -n ${GUID}-tasks-dev"
+                sh "oc start-build tasks --follow --from-file=./target/mlbparks.war -n ${GUID}-tasks-dev"
 
                 // Tag the image using the devTag
                 openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: '${GUID}-tasks-dev', namespace: '${GUID}-tasks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false'
