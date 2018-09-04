@@ -143,10 +143,10 @@ pipeline {
             sh "curl http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/healthz/"
 
             echo "Retrieving Service Info"
-            sh "http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/healthz/"
+            sh "curl http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/info/"
 
             echo "Creating the MLB Parks data in the MongoDB database"
-            sh "http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/data/load/"
+            sh "curl http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/data/load/"
           }
         }
       }
