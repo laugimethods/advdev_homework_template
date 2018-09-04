@@ -57,6 +57,9 @@ pipeline {
       }
     }
     stage('Unit Tests & Sonar') {
+      when {
+        environment name: 'TEST', value: 'true'
+      }
       parallel {
         stage('Unit Tests') {
           steps {
@@ -98,8 +101,7 @@ pipeline {
                 // Start Binary Build in OpenShift using the file we just published
                 // The filename is openshift-tasks.war in the 'target' directory of your current
                 // Jenkins workspace
-                sh "oc new-build --binary=true --name='mlbparks' jboss-eap70-openshift:1.7 --allow-missing-imagestream-tags=true -n ${GUID}-parks-dev"
-
+//                sh "oc new-build --binary=true --name='mlbparks' jboss-eap70-openshift:1.7 --allow-missing-imagestream-tags=true -n ${GUID}-parks-dev"
                 sh "oc start-build mlbparks --follow --from-file=./target/mlbparks.war -n ${GUID}-parks-dev"
                 // Tag the image using the devTag
                 openshiftTag alias: 'false', destStream: 'mlbparks', destTag: "${devTag}", destinationNamespace: "${GUID}-parks-dev", namespace: "${GUID}-parks-dev", srcStream: 'mlbparks', srcTag: 'latest', verbose: 'false'
