@@ -53,8 +53,18 @@ oc set triggers dc/mlbparks --remove-all
 oc expose dc mlbparks --port 8080
 oc expose svc mlbparks
 
-##oc set volume dc/tasks --add --name=jboss-config --mount-path=/opt/eap/standalone/configuration/application-users.properties --sub-path=application-users.properties --configmap-name=tasks-config -n xyz-tasks-dev
-##oc set volume dc/tasks --add --name=jboss-config1 --mount-path=/opt/eap/standalone/configuration/application-roles.properties --sub-path=application-roles.properties --configmap-name=tasks-config -n xyz-tasks-dev
+echo '------ Setting up the ParksMap Application ------'
+## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
+oc new-build --binary=true --name="parksmap" redhat-openjdk18-openshift:1.2
+
+oc new-app "${GUID}-parks-dev/parksmap:0.0-0" --name=parksmap --allow-missing-imagestream-tags=true
+oc set env dc/parksmap --from-literal="APPNAME=ParksMap (Dev)"
+
+oc policy add-role-to-user view --serviceaccount=default
+
+oc set triggers dc/parksmap --remove-all
+oc expose dc parksmap --port 8080
+oc expose svc parksmap
 
 echo '------ Start dev-pipeline ------'
 #oc_project "$GUID" 'jenkins'

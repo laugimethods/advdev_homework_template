@@ -57,9 +57,9 @@ pipeline {
       }
     }
     stage('Unit Tests & Sonar') {
-//      when {
-//        environment name: 'TEST', value: 'true'
-//      }
+      when {
+        environment name: 'TEST', value: 'true'
+      }
       parallel {
         stage('Unit Tests') {
           steps {
@@ -75,6 +75,36 @@ pipeline {
             container('jnlp') {
               dir('ParksMap') {
                 sh "$maven sonar:sonar -Dsonar.ws.timeout=180 -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+              }
+            }
+          }
+        }
+      }
+    }
+    stage('Deployment to Registry') {
+      parallel {
+        stage('Publish WAR to Nexus') {
+          steps {
+            container('jnlp') {
+              dir('ParksMap') {
+                echo "Publish to Nexus"
+                sh "$maven deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3-${GUID}-nexus.apps.${CLUSTER}/repository/releases"
+              }
+            }
+          }
+        }
+        stage('Build and Tag OpenShift Image') {
+          steps {
+            container('jnlp') {
+              dir('ParksMap') {
+                echo "Building OpenShift container image tasks:${devTag}"
+                // Start Binary Build in OpenShift using the file we just published
+                // The filename is openshift-tasks.war in the 'target' directory of your current
+                // Jenkins workspace
+//                sh "oc new-build --binary=true --name='ParksMap' jboss-eap70-openshift:1.7 --allow-missing-imagestream-tags=true -n ${GUID}-parks-dev"
+                sh "oc start-build parksmap --follow --from-file=./target/parksmap.war -n ${GUID}-parks-dev"
+                // Tag the image using the devTag
+                openshiftTag alias: 'false', destStream: 'parksmap', destTag: "${devTag}", destinationNamespace: "${GUID}-parks-dev", namespace: "${GUID}-parks-dev", srcStream: 'parksmap', srcTag: 'latest', verbose: 'false'
               }
             }
           }
