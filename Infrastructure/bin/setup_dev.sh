@@ -53,9 +53,11 @@ oc new-app "${GUID}-parks-dev/mlbparks:latest" --name=mlbparks \
 
 oc set env dc/mlbparks --from configmap/mlbparks-config configmap/mongodb-config
 
+:'
 oc set triggers dc/mlbparks --remove-all
 oc expose dc mlbparks --port 8080
 oc expose svc mlbparks
+'
 
 echo '------ Setting up the Nationalparks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks
@@ -69,9 +71,11 @@ oc new-app "${GUID}-parks-dev/nationalparks:latest" --name=nationalparks \
 
 oc set env dc/nationalparks --from configmap/nationalparks-config configmap/mongodb-config
 
+:'
 oc set triggers dc/nationalparks --remove-all
 oc expose dc nationalparks --port 8080
 oc expose svc nationalparks
+'
 
 echo '------ Setting up the ParksMap frontend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
@@ -83,7 +87,7 @@ oc set env dc/parksmap -e "APPNAME=ParksMap (Dev)"
 
 oc policy add-role-to-user view --serviceaccount=default
 
-oc set triggers dc/parksmap --remove-all
+# oc set triggers dc/parksmap --remove-all
 oc expose dc parksmap --port 8080
 oc expose svc parksmap
 
