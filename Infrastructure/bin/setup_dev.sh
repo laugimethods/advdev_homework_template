@@ -42,11 +42,13 @@ oc create configmap mongodb-config \
     --from-literal DB_REPLICASET="$MONGODB_REPLICASET"
 
 echo '------ Setting up the MLB Parks Application ------'
-oc new-build --binary=true --name="mlbparks" jboss-eap70-openshift:1.7
-
 oc create configmap mlbparks-config \
   --from-literal="APPNAME=MLB Parks (Dev)"
-oc new-app "${GUID}-parks-dev/mlbparks:0.0-0" --name=mlbparks --allow-missing-imagestream-tags=true
+
+oc new-build --binary=true --name="mlbparks" jboss-eap70-openshift:1.7
+oc new-app "${GUID}-parks-dev/mlbparks:latest" --name=mlbparks \
+  --allow-missing-imagestream-tags=true --allow-missing-images=true
+
 oc set env dc/mlbparks --from configmap/mlbparks-config configmap/mongodb-config
 
 oc set triggers dc/mlbparks --remove-all
@@ -56,8 +58,9 @@ oc expose svc mlbparks
 echo '------ Setting up the ParksMap Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
 oc new-build --binary=true --name="parksmap" redhat-openjdk18-openshift:1.2
+oc new-app "${GUID}-parks-dev/parksmap:latest" --name=parksmap \
+  --allow-missing-imagestream-tags=true --allow-missing-images=true
 
-oc new-app "${GUID}-parks-dev/parksmap:0.0-0" --name=parksmap --allow-missing-imagestream-tags=true
 oc set env dc/parksmap -e "APPNAME=ParksMap (Dev)"
 
 oc policy add-role-to-user view --serviceaccount=default
