@@ -1,4 +1,6 @@
 // Jenkinsfile for ParksMap
+def maven = '/opt/rh/rh-maven33/root/usr/bin/mvn -s ./nexus_settings.xml'
+
 pipeline {
   agent {
     kubernetes {
@@ -49,7 +51,7 @@ pipeline {
       steps {
         container('jnlp') {
           dir('ParksMap') {
-            sh "$maven clean install -DskipTests=true"
+            sh "$maven clean package spring-boot:repackage -DskipTests -Dcom.redhat.xpaas.repo.redhatga"
           }
         }
       }
@@ -79,7 +81,7 @@ pipeline {
         }
       }
     }
-    
+
   }
 }
 
