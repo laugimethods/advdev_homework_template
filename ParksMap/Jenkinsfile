@@ -74,7 +74,7 @@ pipeline {
           steps {
             container('jnlp') {
               dir('ParksMap') {
-                sh "$maven sonar:sonar -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+                sh "$maven sonar:sonar -Dsonar.ws.timeout=180 -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
               }
             }
           }
