@@ -14,22 +14,72 @@ pipeline {
     }
   }
   stages {
-    stage('Run Skopeo') {
+    stage('Initial Settings') {
       steps {
         container('jnlp') {
           echo "GUID: ${GUID}"
           echo "CLUSTER: ${CLUSTER}"
-          // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
-          // You need to build the application in directory `MLBParks`.
-          // Also copy "../nexus_settings.xml" to your build directory
-          // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
           sh 'skopeo --version'
-          sh 'mvn -version'
+          sh "$maven -version"
           sh 'pwd'
           sh 'ls'
+          // https://stackoverflow.com/questions/44099851/how-do-i-pass-variables-between-stages-in-a-declarative-jenkins-pipeline
+          script {
+            // Extract version and other properties from the pom.xml
+            groupId    = getGroupIdFromPom("./ParksMap/pom.xml")
+            artifactId = getArtifactIdFromPom("./ParksMap/pom.xml")
+            version    = getVersionFromPom("./ParksMap/pom.xml")
+            // Set the tag for the development image: version + build number
+            devTag  = "${version}-${BUILD_NUMBER}"
+            // Set the tag for the production image: version
+            prodTag = "${version}"
+          }
+          echo "devTag: ${devTag}"
+          echo "prodTag: ${prodTag}"
+
+          // Your Pipeline Code goes here. Make sure to use the ${GUID} and ${CLUSTER} parameters where appropriate
+          // You need to build the application in directory `ParksMap`.
+          // Also copy "../nexus_settings.xml" to your build directory
+          // and replace 'GUID' in the file with your ${GUID} to point to >your< Nexus instance
+          sh "sed -e 's/\\GUID/${GUID}/' ./nexus_settings.xml > ./ParksMap/nexus_settings.xml"
         }
       }
     }
+    stage('Maven Build') {
+      steps {
+        container('jnlp') {
+          dir('ParksMap') {
+            sh "$maven clean install -DskipTests=true"
+          }
+        }
+      }
+    }
+    stage('Unit Tests & Sonar') {
+      when {
+        environment name: 'TEST', value: 'true'
+      }
+      parallel {
+        stage('Unit Tests') {
+          steps {
+            container('jnlp') {
+              dir('ParksMap') {
+                sh "$maven test"
+              }
+            }
+          }
+        }
+        stage('Sonar') {
+          steps {
+            container('jnlp') {
+              dir('ParksMap') {
+                sh "$maven sonar:sonar -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+              }
+            }
+          }
+        }
+      }
+    }
+    
   }
 }
 
