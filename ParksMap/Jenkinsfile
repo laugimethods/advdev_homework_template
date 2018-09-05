@@ -57,9 +57,9 @@ pipeline {
       }
     }
     stage('Unit Tests & Sonar') {
-      when {
-        environment name: 'TEST', value: 'true'
-      }
+//      when {
+//        environment name: 'TEST', value: 'true'
+//      }
       parallel {
         stage('Unit Tests') {
           steps {
