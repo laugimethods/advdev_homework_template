@@ -58,7 +58,7 @@ echo '------ Setting up the ParksMap Application ------'
 oc new-build --binary=true --name="parksmap" redhat-openjdk18-openshift:1.2
 
 oc new-app "${GUID}-parks-dev/parksmap:0.0-0" --name=parksmap --allow-missing-imagestream-tags=true
-oc set env dc/parksmap --from-literal="APPNAME=ParksMap (Dev)"
+oc set env dc/parksmap -e "APPNAME=ParksMap (Dev)"
 
 oc policy add-role-to-user view --serviceaccount=default
 
