@@ -41,12 +41,14 @@ oc create configmap mongodb-config \
     --from-literal DB_PASSWORD="$MONGODB_PASSWORD" \
     --from-literal DB_REPLICASET="$MONGODB_REPLICASET"
 
-echo '------ Setting up the MLB Parks Application ------'
+echo '------ Setting up the MLB Parks backend Application ------'
+## https://github.com/wkulhanek/advdev_homework_template/tree/master/MLBParks
 oc create configmap mlbparks-config \
   --from-literal="APPNAME=MLB Parks (Dev)"
 
 oc new-build --binary=true --name="mlbparks" jboss-eap70-openshift:1.7
 oc new-app "${GUID}-parks-dev/mlbparks:latest" --name=mlbparks \
+  -l type=parksmap-backend \
   --allow-missing-imagestream-tags=true --allow-missing-images=true
 
 oc set env dc/mlbparks --from configmap/mlbparks-config configmap/mongodb-config
@@ -55,7 +57,23 @@ oc set triggers dc/mlbparks --remove-all
 oc expose dc mlbparks --port 8080
 oc expose svc mlbparks
 
-echo '------ Setting up the ParksMap Application ------'
+echo '------ Setting up the Nationalparks backend Application ------'
+## https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks
+oc create configmap nationalparks-config \
+  --from-literal="APPNAME=National Parks (Dev)"
+
+oc new-build --binary=true --name="nationalparks" redhat-openjdk18-openshift:1.2
+oc new-app "${GUID}-parks-dev/nationalparks:latest" --name=nationalparks \
+  -l type=parksmap-backend \
+  --allow-missing-imagestream-tags=true --allow-missing-images=true
+
+oc set env dc/nationalparks --from configmap/nationalparks-config configmap/mongodb-config
+
+oc set triggers dc/nationalparks --remove-all
+oc expose dc nationalparks --port 8080
+oc expose svc nationalparks
+
+echo '------ Setting up the ParksMap frontend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
 oc new-build --binary=true --name="parksmap" redhat-openjdk18-openshift:1.2
 oc new-app "${GUID}-parks-dev/parksmap:latest" --name=parksmap \
