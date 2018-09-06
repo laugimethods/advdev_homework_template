@@ -134,19 +134,21 @@ pipeline {
         container('jnlp') {
           dir('Nationalparks') {
             echo "Running Integration Tests"
-            sleep 15
+            sleep 30
 
             // https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks
 
-            echo "Checking nationalparks service"
+            echo "Checking the Nationalparks service"
             sh "curl http://nationalparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/healthz/"
 
-            echo "Retrieving Service Info"
+            echo "Retrieving Nationalparks Service Info"
             sh "curl http://nationalparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/info/"
 
-            echo "Creating the MLB Parks data in the MongoDB database"
-            // 0 Items inserted in database. Error connecting
+            echo "Creating the Nationalparks data in the MongoDB database"
             sh "curl http://nationalparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/data/load/"
+
+//            echo "Getting the Nationalparks data from the MongoDB database"
+//            sh "curl http://nationalparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/data/all/"
           }
         }
       }

@@ -135,7 +135,7 @@ pipeline {
         container('jnlp') {
           dir('MLBParks') {
             echo "Running Integration Tests"
-            sleep 15
+            sleep 30
 
             // https://github.com/wkulhanek/advdev_homework_template/tree/master/MLBParks
 
@@ -148,6 +148,9 @@ pipeline {
             echo "Creating the MLB Parks data in the MongoDB database"
             // 0 Items inserted in database. Error connecting
             sh "curl http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/data/load/"
+
+            echo "Getting the MLB Parks data from the MongoDB database"
+            sh "curl http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/data/all/"
           }
         }
       }

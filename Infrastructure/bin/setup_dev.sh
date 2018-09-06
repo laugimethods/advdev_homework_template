@@ -35,11 +35,11 @@ oc new-app \
 oc create configmap mongodb-config \
     --from-literal DB_HOST="$MONGODB_HOST" \
     --from-literal DB_PORT="$MONGODB_PORT" \
-    --from-literal DB_NAME="$MONGODB_NAME" \
-    --from-literal DB_DATABASE="$MONGODB_DATABASE" \
     --from-literal DB_USERNAME="$MONGODB_USERNAME" \
     --from-literal DB_PASSWORD="$MONGODB_PASSWORD" \
-    --from-literal DB_REPLICASET="$MONGODB_REPLICASET"
+    --from-literal DB_NAME="$MONGODB_NAME" \
+    --from-literal DB_DATABASE="$MONGODB_DATABASE"
+##    --from-literal DB_REPLICASET="$MONGODB_REPLICASET"
 
 echo '------ Setting up the MLB Parks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/MLBParks
