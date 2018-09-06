@@ -58,6 +58,11 @@ oc set triggers dc/mlbparks --remove-all
 oc expose dc mlbparks --port 8080
 oc expose svc mlbparks
 
+oc set probe dc/mlbparks --readiness --get-url=http://:8080/ws/healthz/ \
+  --initial-delay-seconds=30 --period-seconds=10 --timeout-seconds=5
+oc set probe dc/mlbparks --liveness --get-url=http://:8080/ws/healthz/ \
+  --initial-delay-seconds=45 --period-seconds=10 --timeout-seconds=5
+
 echo '------ Setting up the Nationalparks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks
 oc create configmap nationalparks-config \
@@ -75,6 +80,10 @@ oc set triggers dc/nationalparks --remove-all
 oc expose dc nationalparks --port 8080
 oc expose svc nationalparks
 
+oc set probe dc/nationalparks --readiness --get-url=http://:8080/ws/healthz/ \
+  --initial-delay-seconds=30 --period-seconds=10 --timeout-seconds=5
+oc set probe dc/nationalparks --liveness --get-url=http://:8080/ws/healthz/ \
+  --initial-delay-seconds=45 --period-seconds=10 --timeout-seconds=5
 
 echo '------ Setting up the ParksMap frontend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
@@ -89,6 +98,11 @@ oc policy add-role-to-user view --serviceaccount=default
 oc set triggers dc/parksmap --remove-all
 oc expose dc parksmap --port 8080
 oc expose svc parksmap
+
+oc set probe dc/parksmap --readiness --get-url=http://:8080/ws/healthz/ \
+  --initial-delay-seconds=30 --period-seconds=10 --timeout-seconds=5
+oc set probe dc/parksmap --liveness --get-url=http://:8080/ws/healthz/ \
+  --initial-delay-seconds=45 --period-seconds=10 --timeout-seconds=5
 
 echo '------ Start dev-pipeline ------'
 #oc_project "$GUID" 'jenkins'
