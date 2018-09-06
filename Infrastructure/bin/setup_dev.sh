@@ -29,7 +29,7 @@ oc new-app \
     -p MONGODB_PASSWORD="$MONGODB_PASSWORD" \
     -p MONGODB_DATABASE="$MONGODB_DATABASE" \
     -p MONGODB_ADMIN_PASSWORD="$MONGODB_ADMIN_PASSWORD" \
-    --name="$MONGODB_NAME" \
+    --name="$MONGODB_SERVICE_NAME" \
     mongodb-ephemeral
 
 oc create configmap mongodb-config \
@@ -37,7 +37,7 @@ oc create configmap mongodb-config \
     --from-literal DB_PORT="$MONGODB_PORT" \
     --from-literal DB_USERNAME="$MONGODB_USERNAME" \
     --from-literal DB_PASSWORD="$MONGODB_PASSWORD" \
-    --from-literal DB_NAME="$MONGODB_NAME" \
+    --from-literal DB_NAME="$MONGODB_DATABASE" \
     --from-literal DB_DATABASE="$MONGODB_DATABASE"
 ##    --from-literal DB_REPLICASET="$MONGODB_REPLICASET"
 
