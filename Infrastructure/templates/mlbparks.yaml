@@ -1,149 +1,170 @@
-apiVersion: apps.openshift.io/v1
-kind: DeploymentConfig
-metadata:
-  annotations:
-    openshift.io/generated-by: OpenShiftNewApp
-  creationTimestamp: '2018-09-06T17:52:53Z'
-  generation: 8
-  labels:
-    app: mlbparks
-    type: parksmap-backend
-  name: mlbparks
-  namespace: b8da-parks-prod
-  resourceVersion: '51008967'
-  selfLink: >-
-    /apis/apps.openshift.io/v1/namespaces/b8da-parks-prod/deploymentconfigs/mlbparks
-  uid: adbed601-b1fd-11e8-b69b-0220bffb280e
-spec:
-  replicas: 1
-  revisionHistoryLimit: 10
-  selector:
-    app: mlbparks
-    deploymentconfig: mlbparks
-    type: parksmap-backend
-  strategy:
-    activeDeadlineSeconds: 21600
-    resources: {}
-    rollingParams:
-      intervalSeconds: 1
-      maxSurge: 25%
-      maxUnavailable: 25%
-      timeoutSeconds: 600
-      updatePeriodSeconds: 1
-    type: Rolling
-  template:
-    metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewApp
-      creationTimestamp: null
-      labels:
-        app: mlbparks
-        deploymentconfig: mlbparks
-        type: parksmap-backend
-    spec:
-      containers:
-        - env:
-            - name: APPNAME
-              valueFrom:
-                configMapKeyRef:
-                  key: APPNAME
-                  name: mlbparks-config
-            - name: DB_DATABASE
-              valueFrom:
-                configMapKeyRef:
-                  key: DB_DATABASE
-                  name: mongodb-config
-            - name: DB_HOST
-              valueFrom:
-                configMapKeyRef:
-                  key: DB_HOST
-                  name: mongodb-config
-            - name: DB_NAME
-              valueFrom:
-                configMapKeyRef:
-                  key: DB_NAME
-                  name: mongodb-config
-            - name: DB_PORT
-              valueFrom:
-                configMapKeyRef:
-                  key: DB_PORT
-                  name: mongodb-config
-            - name: DB_REPLICASET
-              valueFrom:
-                configMapKeyRef:
-                  key: DB_REPLICASET
-                  name: mongodb-config
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: DB_PASSWORD
-                  name: mongodb-secret
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: DB_USERNAME
-                  name: mongodb-secret
-          image: >-
-            docker-registry.default.svc:5000/b8da-parks-dev/mlbparks@sha256:6d93c1c15bb4d0d7ce0eef7c1cc29f209b45fa4e7a22f1caa98a74b496641a82
-          imagePullPolicy: Always
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /ws/healthz/
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 45
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 5
-          name: mlbparks
-          ports:
-            - containerPort: 8080
-              protocol: TCP
-            - containerPort: 8443
-              protocol: TCP
-            - containerPort: 8778
-              protocol: TCP
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /ws/healthz/
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 5
-          resources: {}
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
-      terminationGracePeriodSeconds: 30
-  test: false
-  triggers: []
-status:
-  availableReplicas: 0
-  conditions:
-    - lastTransitionTime: '2018-09-06T17:52:53Z'
-      lastUpdateTime: '2018-09-06T17:52:53Z'
-      message: Deployment config does not have minimum availability.
-      status: 'False'
-      type: Available
-    - lastTransitionTime: '2018-09-06T17:53:08Z'
-      lastUpdateTime: '2018-09-06T17:53:08Z'
-      message: replication controller "mlbparks-3" is progressing
-      reason: ReplicationControllerUpdated
-      status: 'True'
-      type: Progressing
-  details:
-    causes:
-      - type: ConfigChange
-    message: config change
-  latestVersion: 3
-  observedGeneration: 5
-  replicas: 1
-  unavailableReplicas: 1
-  updatedReplicas: 1
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app: ${NAME}
+  template: ${NAME}-template
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: ${NAME}
+      type: parksmap-backend
+    name: ${NAME}
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: ${NAME}
+      deploymentconfig: ${NAME}
+      type: parksmap-backend
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: ${NAME}
+          deploymentconfig: ${NAME}
+          type: parksmap-backend
+      spec:
+        containers:
+          - env:
+              - name: APPNAME
+                value: ${APPNAME}
+              - name: DB_DATABASE
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_DATABASE
+                    name: mongodb-config
+              - name: DB_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_HOST
+                    name: mongodb-config
+              - name: DB_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_NAME
+                    name: mongodb-config
+              - name: DB_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_PORT
+                    name: mongodb-config
+              - name: DB_REPLICASET
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_REPLICASET
+                    name: mongodb-config
+              - name: DB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: DB_PASSWORD
+                    name: mongodb-secret
+              - name: DB_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    key: DB_USERNAME
+                    name: mongodb-secret
+            image: >-
+              docker-registry.default.svc:5000/b8da-parks-dev/mlbparks:latest
+            imagePullPolicy: Always
+            livenessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /ws/healthz/
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 45
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+            name: mlbparks
+            ports:
+              - containerPort: 8080
+                protocol: TCP
+              - containerPort: 8443
+                protocol: TCP
+              - containerPort: 8778
+                protocol: TCP
+            readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /ws/healthz/
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers: []
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${NAME}
+      type: parksmap-backend
+    name: ${NAME}
+  spec:
+    ports:
+      - name: 8080-tcp
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+      - name: 8443-tcp
+        port: 8443
+        protocol: TCP
+        targetPort: 8443
+      - name: 8778-tcp
+        port: 8778
+        protocol: TCP
+        targetPort: 8778
+    selector:
+      app: ${NAME}
+      deploymentconfig: ${NAME}
+      type: parksmap-backend
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    labels:
+      app: ${NAME}
+      type: parksmap-backend
+    name: ${NAME}
+  spec:
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: mlbparks
+      weight: 100
+    wildcardPolicy: None
+parameters:
+- description: The name of the MLB Parks Application.
+  displayName: MLB Parks Application Name
+  name: APPNAME
+  value: "MLB Parks"
+- description: The name of the MLB Parks Deployment.
+  displayName: MLB Parks Deployment Name
+  name: NAME
+  value: "mlbparks"

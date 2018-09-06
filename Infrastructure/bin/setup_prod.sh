@@ -43,13 +43,15 @@ oc create configmap mongodb-config \
     --from-literal DB_DATABASE="$MONGODB_DATABASE" \
     --from-literal DB_REPLICASET="$MONGODB_REPLICASET"
 
+## https://docs.openshift.com/container-platform/3.9/dev_guide/environment_variables.html#dev-guide-environment-variables
 oc create secret generic mongodb-secret \
     --from-literal DB_USERNAME=$(oc set env sts/mongodb --list | grep MONGODB_USER | tr '=' '\n' | tail -1) \
     --from-literal DB_PASSWORD=$(oc set env sts/mongodb --list | grep MONGODB_PASSWORD | tr '=' '\n' | tail -1)
 
 echo '------ Setting up the MLB Parks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/MLBParks
-oc new-app "${GUID}-parks-dev/mlbparks:latest" --name=mlbparks \
+:'
+oc new-app "${GUID}-parks-dev/mlbparks:latest" --name=mlbparks-prod \
   -e APPNAME="MLB Parks (Prod)" \
   -l type=parksmap-backend \
   --allow-missing-imagestream-tags=true --allow-missing-images=true
@@ -65,12 +67,31 @@ oc set probe dc/mlbparks --readiness --get-url=http://:8080/ws/healthz/ \
   --initial-delay-seconds=30 --period-seconds=10 --timeout-seconds=5
 oc set probe dc/mlbparks --liveness --get-url=http://:8080/ws/healthz/ \
   --initial-delay-seconds=45 --period-seconds=10 --timeout-seconds=5
+'
+oc process -f ../templates/mlbparks.yaml \
+  -p "NAME=mlbparks-green" \
+  -p "APPNAME=MLB Parks (Green)" \
+  | oc create -f -
 
 echo '------ Setting up the Nationalparks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks
-oc new-app ../templates/mlbparks.yaml \
-  --name=nationalparks-green \
-  -e APPNAME="National Parks (Green)"
+oc new-app "${GUID}-parks-dev/nationalparks:latest" \
+  --name=nationalparks \
+  -e APPNAME="National Parks (Prod)" \
+  -l type=parksmap-backend \
+  --allow-missing-imagestream-tags=true --allow-missing-images=true
+
+oc set env dc/nationalparks --from configmap/mongodb-config
+oc set env dc/nationalparks --from secret/mongodb-secret
+
+oc set triggers dc/nationalparks --remove-all
+oc expose dc nationalparks --port 8080
+oc expose svc nationalparks
+
+oc set probe dc/nationalparks --readiness --get-url=http://:8080/ws/healthz/ \
+  --initial-delay-seconds=30 --period-seconds=10 --timeout-seconds=5
+oc set probe dc/nationalparks --liveness --get-url=http://:8080/ws/healthz/ \
+  --initial-delay-seconds=45 --period-seconds=10 --timeout-seconds=5
 
 echo '------ Setting up the ParksMap frontend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
