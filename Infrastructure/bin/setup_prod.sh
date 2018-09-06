@@ -68,23 +68,9 @@ oc set probe dc/mlbparks --liveness --get-url=http://:8080/ws/healthz/ \
 
 echo '------ Setting up the Nationalparks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks
-oc new-app "${GUID}-parks-dev/nationalparks:latest" \
-  --name=nationalparks \
-  -e APPNAME="National Parks (Prod)" \
-  -l type=parksmap-backend \
-  --allow-missing-imagestream-tags=true --allow-missing-images=true
-
-oc set env dc/nationalparks --from configmap/mongodb-config
-oc set env dc/nationalparks --from secret/mongodb-secret
-
-oc set triggers dc/nationalparks --remove-all
-oc expose dc nationalparks --port 8080
-oc expose svc nationalparks
-
-oc set probe dc/nationalparks --readiness --get-url=http://:8080/ws/healthz/ \
-  --initial-delay-seconds=30 --period-seconds=10 --timeout-seconds=5
-oc set probe dc/nationalparks --liveness --get-url=http://:8080/ws/healthz/ \
-  --initial-delay-seconds=45 --period-seconds=10 --timeout-seconds=5
+oc new-app ../templates/mlbparks.yaml \
+  --name=nationalparks-green \
+  -e APPNAME="National Parks (Green)"
 
 echo '------ Setting up the ParksMap frontend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
