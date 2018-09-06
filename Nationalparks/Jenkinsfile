@@ -143,8 +143,15 @@ pipeline {
 
             echo "Retrieving Nationalparks Service Info"
             sh "curl http://nationalparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/info/"
-
-            echo "Creating the Nationalparks data in the MongoDB database"
+          }
+        }
+      }
+    }
+    stage('Populate the Nationalparks Data') {
+      steps {
+        container('jnlp') {
+          dir('Nationalparks') {
+            echo "Populate the Nationalparks Data into the MongoDB database"
             sh "curl http://nationalparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/data/load/"
 
 //            echo "Getting the Nationalparks data from the MongoDB database"

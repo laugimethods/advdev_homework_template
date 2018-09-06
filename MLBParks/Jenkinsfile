@@ -144,8 +144,15 @@ pipeline {
 
             echo "Retrieving Service Info"
             sh "curl http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/info/"
-
-            echo "Creating the MLB Parks data in the MongoDB database"
+          }
+        }
+      }
+    }
+    stage('Populate the MLB Parks Data') {
+      steps {
+        container('jnlp') {
+          dir('MLBParks') {
+            echo "Populate the MLB Parks Data in the MongoDB database"
             // 0 Items inserted in database. Error connecting
             sh "curl http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/data/load/"
 
