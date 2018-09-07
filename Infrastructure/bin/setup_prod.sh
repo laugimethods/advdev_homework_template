@@ -23,7 +23,8 @@ echo '------ Setting up the PROD project ------'
 oc policy add-role-to-user edit "system:serviceaccount:${GUID}-jenkins:jenkins"
 
 ## Grant the correct permissions to pull images from the development project
-oc policy add-role-to-group view system:serviceaccount:${GUID}-parks-prod -n ${GUID}-parks-dev
+### https://github.com/debianmaster/openshift-examples/tree/master/pipeline-example#create-a-new-buildconfig-for-pipelines
+oc policy add-role-to-group system:image-puller "system:serviceaccounts:${GUID}-parks-prod" -n "${GUID}-parks-dev"
 
 ## Grant the correct permissions for the ParksMap application to read back-end services (see the associated README file)
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
@@ -71,6 +72,7 @@ oc set probe dc/mlbparks --liveness --get-url=http://:8080/ws/healthz/ \
 oc process -f ../templates/mlbparks.yaml \
   -p "NAME=mlbparks-green" \
   -p "APPNAME=MLB Parks (Green)" \
+  -p "IMAGE=docker-registry.default.svc:5000/b8da-parks-dev/mlbparks:latest" \
   | oc create -f -
 
 echo '------ Setting up the Nationalparks backend Application ------'

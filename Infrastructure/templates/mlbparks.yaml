@@ -74,8 +74,7 @@ objects:
                   secretKeyRef:
                     key: DB_USERNAME
                     name: mongodb-secret
-            image: >-
-              docker-registry.default.svc:5000/b8da-parks-dev/mlbparks:latest
+            image: ${IMAGE}
             imagePullPolicy: Always
             livenessProbe:
               failureThreshold: 3
@@ -168,3 +167,7 @@ parameters:
   displayName: MLB Parks Deployment Name
   name: NAME
   value: "mlbparks"
+- description: The Docker Image Name and Tag
+  displayName: Docker Image Name and Tag
+  name: IMAGE
+  required: true
