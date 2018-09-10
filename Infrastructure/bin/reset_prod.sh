@@ -17,4 +17,12 @@ echo "Resetting Parks Production Environment in project ${GUID}-parks-prod to Gr
 # up the whole infrastructure to guarantee a Blue
 # rollout followed by a Green rollout.
 
-# To be Implemented by Student
+curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/"
+curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/backends/list"
+
+oc patch route/mlbparks -p '{"spec":{"to":{"name":"mlbparks-green"}}}' -n "${GUID}-parks-prod"
+oc patch route/nationalparks -p '{"spec":{"to":{"name":"nationalparks-green"}}}' -n "${GUID}-parks-prod"
+oc patch route/parksmap -p '{"spec":{"to":{"name":"parksmap-green"}}}' -n "${GUID}-parks-prod"
+
+curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/"
+curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/backends/list"
