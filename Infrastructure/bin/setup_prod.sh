@@ -63,6 +63,8 @@ oc new-app -f ../templates/parksmap_backend.yaml \
 
 ## Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
 oc rollout latest dc/mlbparks-green
+oc expose dc mlbparks-green --name=mlbparks --port 8080
+oc expose svc mlbparks
 
 echo '------ Setting up the Nationalparks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks
@@ -78,26 +80,22 @@ oc new-app -f ../templates/parksmap_backend.yaml \
 
 ## Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
 oc rollout latest dc/nationalparks-green
+oc expose dc nationalparks-green --name=nationalparks --port 8080
+oc expose svc nationalparks
 
 echo '------ Setting up the ParksMap frontend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
-oc new-app "${GUID}-parks-dev/parksmap:latest" --name=parksmap \
-  --allow-missing-imagestream-tags=true --allow-missing-images=true
+oc new-app -f ../templates/parksmap_frontend.yaml \
+  -p "NAME=parksmap-green" \
+  -p "APPNAME=ParksMap (Green)" \
+  -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/parksmap:latest"
 
-oc set env dc/parksmap -e "APPNAME=ParksMap (Prod)"
+oc new-app -f ../templates/parksmap_frontend.yaml \
+  -p "NAME=parksmap-blue" \
+  -p "APPNAME=ParksMap (Blue)" \
+  -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/parksmap:latest"
 
-oc policy add-role-to-user view --serviceaccount=default
-
-oc set triggers dc/parksmap --remove-all
-oc expose dc parksmap --port 8080
+## Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
+oc rollout latest dc/parksmap-green
+oc expose dc parksmap-green --name=parksmap --port 8080
 oc expose svc parksmap
-
-oc set probe dc/parksmap --readiness --get-url=http://:8080/ws/healthz/ \
-  --initial-delay-seconds=30 --period-seconds=10 --timeout-seconds=5
-oc set probe dc/parksmap --liveness --get-url=http://:8080/ws/healthz/ \
-  --initial-delay-seconds=45 --period-seconds=10 --timeout-seconds=5
-
-echo '------ Start prod-pipeline ------'
-#oc_project "$GUID" 'jenkins'
-
-#oc start-build mlbparks-pipeline -n "${GUID}-jenkins"

@@ -3,7 +3,7 @@
 . credentials/guid.sh
 . credentials/opentlc.sh
 . credentials/cluster.sh
-. credentials/passwords.sh
+##. credentials/passwords.sh
 
 oc_connect () {
   ./oc_connect.sh
@@ -33,6 +33,11 @@ setup_sonar () {
 
 setup_dev () {
   ./setup_dev.sh "$GUID"
+  next_step setup_prod
+}
+
+setup_prod () {
+  ./setup_prod.sh "$GUID"
   next_step end
 }
 
