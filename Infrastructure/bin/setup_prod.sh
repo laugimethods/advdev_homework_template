@@ -66,23 +66,18 @@ oc rollout latest dc/mlbparks-green
 
 echo '------ Setting up the Nationalparks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks
-oc new-app "${GUID}-parks-dev/nationalparks:latest" \
-  --name=nationalparks \
-  -e APPNAME="National Parks (Prod)" \
-  -l type=parksmap-backend \
-  --allow-missing-imagestream-tags=true --allow-missing-images=true
+oc new-app -f ../templates/parksmap_backend.yaml \
+  -p "NAME=nationalparks-green" \
+  -p "APPNAME=National Parks (Green)" \
+  -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/nationalparks:latest"
 
-oc set env dc/nationalparks --from configmap/mongodb-config
-oc set env dc/nationalparks --from secret/mongodb-secret
+oc new-app -f ../templates/parksmap_backend.yaml \
+  -p "NAME=nationalparks-blue" \
+  -p "APPNAME=National Parks (Blue)" \
+  -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/nationalparks:latest"
 
-oc set triggers dc/nationalparks --remove-all
-oc expose dc nationalparks --port 8080
-oc expose svc nationalparks
-
-oc set probe dc/nationalparks --readiness --get-url=http://:8080/ws/healthz/ \
-  --initial-delay-seconds=30 --period-seconds=10 --timeout-seconds=5
-oc set probe dc/nationalparks --liveness --get-url=http://:8080/ws/healthz/ \
-  --initial-delay-seconds=45 --period-seconds=10 --timeout-seconds=5
+## Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
+oc rollout latest dc/nationalparks-green
 
 echo '------ Setting up the ParksMap frontend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
