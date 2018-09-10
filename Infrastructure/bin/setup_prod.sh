@@ -51,29 +51,18 @@ oc create secret generic mongodb-secret \
 
 echo '------ Setting up the MLB Parks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/MLBParks
-:'
-oc new-app "${GUID}-parks-dev/mlbparks:latest" --name=mlbparks-prod \
-  -e APPNAME="MLB Parks (Prod)" \
-  -l type=parksmap-backend \
-  --allow-missing-imagestream-tags=true --allow-missing-images=true
-
-oc set env dc/mlbparks --from configmap/mongodb-config
-oc set env dc/mlbparks --from secret/mongodb-secret
-
-oc set triggers dc/mlbparks --remove-all
-oc expose dc mlbparks --port 8080
-oc expose svc mlbparks
-
-oc set probe dc/mlbparks --readiness --get-url=http://:8080/ws/healthz/ \
-  --initial-delay-seconds=30 --period-seconds=10 --timeout-seconds=5
-oc set probe dc/mlbparks --liveness --get-url=http://:8080/ws/healthz/ \
-  --initial-delay-seconds=45 --period-seconds=10 --timeout-seconds=5
-'
-oc process -f ../templates/mlbparks.yaml \
+oc new-app -f ../templates/parksmap_backend.yaml \
   -p "NAME=mlbparks-green" \
   -p "APPNAME=MLB Parks (Green)" \
-  -p "IMAGE=docker-registry.default.svc:5000/b8da-parks-dev/mlbparks:latest" \
-  | oc create -f -
+  -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/mlbparks:latest"
+
+oc new-app -f ../templates/parksmap_backend.yaml \
+  -p "NAME=mlbparks-blue" \
+  -p "APPNAME=MLB Parks (Blue)" \
+  -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/mlbparks:latest"
+
+## Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
+oc rollout latest dc/mlbparks-green
 
 echo '------ Setting up the Nationalparks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks

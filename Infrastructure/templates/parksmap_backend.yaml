@@ -1,0 +1,158 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app: ${NAME}
+  template: ${NAME}-template
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: ${NAME}
+      type: parksmap-backend
+    name: ${NAME}
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: ${NAME}
+      deploymentconfig: ${NAME}
+      type: parksmap-backend
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: ${NAME}
+          deploymentconfig: ${NAME}
+          type: parksmap-backend
+      spec:
+        containers:
+          - env:
+              - name: APPNAME
+                value: ${APPNAME}
+              - name: DB_DATABASE
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_DATABASE
+                    name: mongodb-config
+              - name: DB_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_HOST
+                    name: mongodb-config
+              - name: DB_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_NAME
+                    name: mongodb-config
+              - name: DB_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_PORT
+                    name: mongodb-config
+              - name: DB_REPLICASET
+                valueFrom:
+                  configMapKeyRef:
+                    key: DB_REPLICASET
+                    name: mongodb-config
+              - name: DB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: DB_PASSWORD
+                    name: mongodb-secret
+              - name: DB_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    key: DB_USERNAME
+                    name: mongodb-secret
+            image: ${IMAGE}
+            imagePullPolicy: Always
+            livenessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /ws/healthz/
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 45
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+            name: mlbparks
+            ports:
+              - containerPort: 8080
+                protocol: TCP
+              - containerPort: 8443
+                protocol: TCP
+              - containerPort: 8778
+                protocol: TCP
+            readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /ws/healthz/
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers: []
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${NAME}
+      type: parksmap-backend
+    name: ${NAME}
+  spec:
+    ports:
+      - name: 8080-tcp
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+      - name: 8443-tcp
+        port: 8443
+        protocol: TCP
+        targetPort: 8443
+      - name: 8778-tcp
+        port: 8778
+        protocol: TCP
+        targetPort: 8778
+    selector:
+      app: ${NAME}
+      deploymentconfig: ${NAME}
+      type: parksmap-backend
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+parameters:
+- description: The name of the Backend Parks Application.
+  displayName: Backend Application Name
+  name: APPNAME
+  required: true
+- description: The name of the Backend Parks Deployment.
+  displayName: Backend Parks Deployment Name
+  name: NAME
+  required: true
+- description: The Docker Image Name and Tag
+  displayName: Docker Image Name and Tag
+  name: IMAGE
+  required: true
