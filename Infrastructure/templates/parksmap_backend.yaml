@@ -1,22 +1,22 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  app: ${NAME}
-  template: ${NAME}-template
+  app: ${DEPLOYMENT}
+  template: ${DEPLOYMENT}-template
 objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
     labels:
-      app: ${NAME}
+      app: ${DEPLOYMENT}
       type: parksmap-backend
-    name: ${NAME}
+    name: ${DEPLOYMENT}
   spec:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      app: ${NAME}
-      deploymentconfig: ${NAME}
+      app: ${DEPLOYMENT}
+      deploymentconfig: ${DEPLOYMENT}
       type: parksmap-backend
     strategy:
       activeDeadlineSeconds: 21600
@@ -31,13 +31,13 @@ objects:
         post:
           failurePolicy: ignore
           execNewPod:
-            command: [ "curl", "http://${NAME}:8080/ws/data/load/" ]
+            command: [ "curl", "http://${SERVICE}:8080/ws/data/load/" ]
       type: Rolling
     template:
       metadata:
         labels:
-          app: ${NAME}
-          deploymentconfig: ${NAME}
+          app: ${DEPLOYMENT}
+          deploymentconfig: ${DEPLOYMENT}
           type: parksmap-backend
       spec:
         containers:
@@ -80,7 +80,7 @@ objects:
                     key: DB_USERNAME
                     name: mongodb-secret
             image: ${IMAGE}
-            name: ${NAME}
+            name: ${DEPLOYMENT}
             imagePullPolicy: Always
             readinessProbe:
               failureThreshold: 3
@@ -124,9 +124,13 @@ parameters:
   displayName: Backend Application Name
   name: APPNAME
   required: true
+- description: The name of the Backend Parks Service.
+  displayName: Backend Service Name
+  name: SERVICE
+  required: true
 - description: The name of the Backend Parks Deployment.
   displayName: Backend Parks Deployment Name
-  name: NAME
+  name: DEPLOYMENT
   required: true
 - description: The Docker Image Name and Tag
   displayName: Docker Image Name and Tag
