@@ -27,6 +27,11 @@ objects:
         maxUnavailable: 25%
         timeoutSeconds: 600
         updatePeriodSeconds: 1
+        # https://docs.openshift.com/container-platform/3.9/dev_guide/deployments/deployment_strategies.html#pod-based-lifecycle-hook
+        post:
+          failurePolicy: ignore
+          execNewPod:
+            command: [ "curl", "http://${NAME}:8080/ws/data/load/" ]
       type: Rolling
     template:
       metadata:
