@@ -188,6 +188,8 @@ pipeline {
             sh "oc rollout status dc/nationalparks-blue -n ${GUID}-parks-prod"
             // Reroute to the blue service
             sh "oc patch route/nationalparks -p '{\"spec\":{\"to\":{\"name\":\"nationalparks-blue\"}}}' -n $GUID-parks-prod"
+            // Scale down nationalparks-green
+            sh "oc scale dc/nationalparks-green --replicas=0 -n ${GUID}-parks-prod"
           }
         }
       }
