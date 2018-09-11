@@ -101,6 +101,10 @@ oc new-app -f ../templates/parksmap_frontend.yaml \
   -p "APPNAME=ParksMap (Blue)" \
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/parksmap:latest"
 
+## Wait for the backend services completion
+oc rollout status dc/mlbparks-green
+oc rollout status dc/nationalparks-green
+
 ## Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
 oc rollout latest dc/parksmap-green
 oc expose dc parksmap-green --name=parksmap --port 8080
