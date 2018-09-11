@@ -162,7 +162,26 @@ pipeline {
         }
       }
     }
+    // Automatically executes the blue-green go-live switch
+    stage('Blue-Green go-live switch') {
+      steps {
+        container('jnlp') {
+          dir('ParksMap') {
+            echo "Automatically executes the blue-green go-live switch"
 
+            // Deploy the blue service ; Wait for its completion
+            // https://github.com/openshift/origin/issues/10864
+            sh "oc rollout latest dc/parksmap-blue -n ${GUID}-parks-prod"
+            sh "oc scale dc/parksmap-blue --replicas=1 -n ${GUID}-parks-prod"
+            sh "oc rollout status dc/parksmap-blue -n ${GUID}-parks-prod"
+            // Reroute to the blue service
+            sh "oc patch route/parksmap -p '{\"spec\":{\"to\":{\"name\":\"parksmap-blue\"}}}' -n $GUID-parks-prod"
+            // Scale down parksmap-green
+            sh "oc scale dc/parksmap-green --replicas=0 -n ${GUID}-parks-prod"
+          }
+        }
+      }
+    }
   }
 }
 
