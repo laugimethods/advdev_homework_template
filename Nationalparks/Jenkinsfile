@@ -179,18 +179,9 @@ pipeline {
     stage('Blue-Green go-live switch') {
       steps {
         container('jnlp') {
-          dir('Nationalparks') {
+          dir('Infrastructure/bin') {
             echo "Automatically executes the blue-green go-live switch"
-
-            // Deploy the blue service ; Wait for its completion
-            // https://github.com/openshift/origin/issues/10864
-            sh "oc scale dc/nationalparks-blue --replicas=1 -n ${GUID}-parks-prod"
-            sh "oc rollout latest dc/nationalparks-blue -n ${GUID}-parks-prod"
-            sh "oc rollout status dc/nationalparks-blue -n ${GUID}-parks-prod"
-            // Reroute to the blue service
-            sh "oc patch route/nationalparks -p '{\"spec\":{\"to\":{\"name\":\"nationalparks-blue\"}}}' -n $GUID-parks-prod"
-            // Scale down nationalparks-green
-            sh "oc scale dc/nationalparks-green --replicas=0 -n ${GUID}-parks-prod"
+            sh "./switch_service_color.sh nationalparks green blue ${GUID}"
           }
         }
       }
