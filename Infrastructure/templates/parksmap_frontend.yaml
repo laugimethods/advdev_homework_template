@@ -1,23 +1,23 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  app: ${NAME}
-  template: ${NAME}-template
+  app: ${SERVICE}
+  template: ${SERVICE}-template
 objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
     labels:
-      app: ${NAME}
-      type: parksmap-frontend
-    name: ${NAME}
+      app: ${SERVICE}
+#      type: parksmap-frontend
+    name: ${SERVICE}
   spec:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      app: ${NAME}
-      deploymentconfig: ${NAME}
-      type: parksmap-frontend
+      app: ${SERVICE}
+      deploymentconfig: ${SERVICE}
+#      type: parksmap-frontend
     strategy:
       activeDeadlineSeconds: 21600
       resources: {}
@@ -31,16 +31,16 @@ objects:
     template:
       metadata:
         labels:
-          app: ${NAME}
-          deploymentconfig: ${NAME}
-          type: parksmap-frontend
+          app: ${SERVICE}
+          deploymentconfig: ${SERVICE}
+#          type: parksmap-frontend
       spec:
         containers:
           - env:
               - name: APPNAME
                 value: ${APPNAME}
             image: ${IMAGE}
-            name: ${NAME}
+            name: ${SERVICE}
             imagePullPolicy: Always
             readinessProbe:
               failureThreshold: 3
@@ -79,11 +79,48 @@ objects:
         terminationGracePeriodSeconds: 30
     test: false
     triggers: []
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${SERVICE}
+    name: ${SERVICE}
+  spec:
+    ports:
+      - name: 8080-tcp
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+    selector:
+      app: ${SERVICE}
+      deploymentconfig: ${SERVICE}
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    labels:
+      app: ${SERVICE}
+    name: ${SERVICE}
+  spec:
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: ${SERVICE}
+      weight: 100
+    wildcardPolicy: None
 parameters:
 - description: The name of the ParksMap Application.
   displayName: ParksMap Application Name
   name: APPNAME
   value: "ParksMap"
+- description: The name of the Backend Parks Service.
+  displayName: Backend Service Name
+  name: SERVICE
+  value: "parksmap"
 - description: The name of the ParksMap Deployment.
   displayName: ParksMap Deployment Name
   name: NAME

@@ -52,49 +52,51 @@ oc create secret generic mongodb-secret \
 echo '------ Setting up the MLB Parks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/MLBParks
 oc new-app -f ../templates/parksmap_backend.yaml \
-  -p "SERVICE=mlbparks" \
+  -p "SERVICE=mlbparks-green" \
   -p "DEPLOYMENT=mlbparks-green" \
   -p "APPNAME=MLB Parks (Green)" \
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/mlbparks:latest"
 
 oc new-app -f ../templates/parksmap_backend.yaml \
-  -p "SERVICE=mlbparks" \
+  -p "SERVICE=mlbparks-blue" \
   -p "DEPLOYMENT=mlbparks-blue" \
   -p "APPNAME=MLB Parks (Blue)" \
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/mlbparks:latest"
 
 ## Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
 oc rollout latest dc/mlbparks-green
-oc expose dc mlbparks-green --name=mlbparks --port 8080
+oc expose dc mlbparks-green --name=mlbparks -l type=parksmap-backend --port 8080
 oc expose svc mlbparks
 
 echo '------ Setting up the Nationalparks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks
 oc new-app -f ../templates/parksmap_backend.yaml \
-  -p "SERVICE=nationalparks" \
+  -p "SERVICE=nationalparks-green" \
   -p "DEPLOYMENT=nationalparks-green" \
   -p "APPNAME=National Parks (Green)" \
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/nationalparks:latest"
 
 oc new-app -f ../templates/parksmap_backend.yaml \
-  -p "SERVICE=nationalparks" \
+  -p "SERVICE=nationalparks-blue" \
   -p "DEPLOYMENT=nationalparks-blue" \
   -p "APPNAME=National Parks (Blue)" \
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/nationalparks:latest"
 
 ## Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
 oc rollout latest dc/nationalparks-green
-oc expose dc nationalparks-green --name=nationalparks --port 8080
+oc expose dc nationalparks-green --name=nationalparks -l type=parksmap-backend --port 8080
 oc expose svc nationalparks
 
 echo '------ Setting up the ParksMap frontend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
 oc new-app -f ../templates/parksmap_frontend.yaml \
+  -p "SERVICE=parksmap-green" \
   -p "NAME=parksmap-green" \
   -p "APPNAME=ParksMap (Green)" \
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/parksmap:latest"
 
 oc new-app -f ../templates/parksmap_frontend.yaml \
+  -p "SERVICE=parksmap-blue" \
   -p "NAME=parksmap-blue" \
   -p "APPNAME=ParksMap (Blue)" \
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/parksmap:latest"
