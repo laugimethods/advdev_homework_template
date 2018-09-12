@@ -57,9 +57,10 @@ pipeline {
       }
     }
     stage('Unit Tests & Sonar') {
-//      when {
-//        environment name: 'TEST', value: 'true'
-//      }
+      when {
+        beforeAgent true
+        expression { FAST_MODE != 'true' }
+      }
       parallel {
         stage('Unit Tests') {
           steps {
