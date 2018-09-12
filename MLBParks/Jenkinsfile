@@ -16,13 +16,12 @@ pipeline {
     }
   }
   stages {
-    stage('Example') {
-        options {
-            timeout(time: 1, unit: 'HOURS')
-        }
-        steps {
-            echo 'Hello World'
-        }
+    timeout(time: 1, unit: 'HOURS') {
+      stage('Example') {
+          steps {
+              echo 'Hello World'
+          }
+      }
     }
     stage('Initial Settings') {
       steps {
@@ -68,9 +67,6 @@ pipeline {
     stage('Unit Tests & Sonar') {
       when {
         expression { FAST_MODE != 'true' }
-      }
-      options {
-          retry(3)
       }
       parallel {
         stage('Unit Tests') {
