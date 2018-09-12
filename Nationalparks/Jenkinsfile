@@ -15,6 +15,7 @@ pipeline {
       }
     }
   }
+  options { retry(3) }
   stages {
     stage('Initial Settings') {
       steps {
