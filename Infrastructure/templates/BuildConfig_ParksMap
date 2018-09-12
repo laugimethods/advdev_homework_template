@@ -14,3 +14,5 @@ spec:
           value: "${GUID}"
         - name: CLUSTER
           value: "${CLUSTER}"
+        - name: FAST_MODE
+          value: "${FAST_MODE}"

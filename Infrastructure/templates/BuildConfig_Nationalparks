@@ -15,4 +15,4 @@ spec:
         - name: CLUSTER
           value: "${CLUSTER}"
         - name: FAST_MODE
-          value: 'true'
+          value: "${FAST_MODE}"
