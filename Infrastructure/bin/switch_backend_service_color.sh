@@ -1,14 +1,14 @@
 #!/bin/bash
 # Reset Production Project (initial active services: Blue)
 # This sets all services to the Blue service so that any pipeline run will deploy Green
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 2 ]; then
     echo "Usage:"
-    echo "  $0 GUID"
+    echo "  $0 SERVICE GUID"
     exit 1
 fi
 
-GUID=$1
-echo "Resetting Parks Production Environment in project ${GUID}-parks-prod to Blue Services"
+SERVICE=$1
+GUID=$2
 
 source ./utils.sh
-switch_all_service_color 'Green' "$GUID"
+switch_backend_service_color "${SERVICE}" "${GUID}"

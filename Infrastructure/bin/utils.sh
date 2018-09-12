@@ -12,11 +12,31 @@ oc_project () {
   done
 }
 
+switch_backend_service() {
+  SERVICE=$1
+  GUID=$2
+
+  switch_service_color $SERVICE $GUID $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/")
+}
+
+switch_frontend_service() {
+  SERVICE=$1
+  GUID=$2
+
+  switch_service_color $SERVICE $GUID $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/")
+}
+
 switch_service_color() {
   SERVICE=$1
-  CURRENT=$2
-  TARGET=$3
-  GUID=$4
+  GUID=$2
+
+  if [[ $3 = *"Blue"* ]]; then
+    CURRENT='blue'
+    TARGET='green'
+  else
+    CURRENT='green'
+    TARGET='blue'
+  fi
 
   echo ""
   echo "Setting ${SERVICE} Service in Parks Production Environment in project ${GUID}-parks-prod from ${CURRENT} to ${TARGET}"
@@ -40,22 +60,21 @@ switch_service_color() {
 }
 
 switch_all_service_color() {
-  CURRENT=$1
-  TARGET=$2
-  GUID=$3
+  GUID=$1
+  CURRENT=$2
 
   curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/"
   echo ""
   curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/backends/list"
   echo ""
 
-  switch_service_color 'mlbparks' "${CURRENT}" "${TARGET}" "${GUID}"
+  switch_service_color 'mlbparks' "${GUID}" "${CURRENT}"
   curl "http://mlbparks-${TARGET}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/"
 
-  switch_service_color 'nationalparks' "${CURRENT}" "${TARGET}" "${GUID}"
+  switch_service_color 'nationalparks' "${GUID}" "${CURRENT}"
   curl "http://nationalparks-${TARGET}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/"
 
-  switch_service_color 'parksmap' "${CURRENT}" "${TARGET}" "${GUID}"
+  switch_service_color 'parksmap' "${GUID}" "${CURRENT}"
 
   curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/"
   echo ""

@@ -183,7 +183,7 @@ pipeline {
         container('jnlp') {
           dir('Infrastructure/bin') {
             echo "Automatically executes the blue-green go-live switch"
-            sh "./switch_service_color.sh mlbparks green blue ${GUID}"
+            sh "./switch_backend_service_color.sh mlbparks ${GUID}"
           }
         }
       }
