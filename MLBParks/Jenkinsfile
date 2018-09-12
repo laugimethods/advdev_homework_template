@@ -15,14 +15,8 @@ pipeline {
       }
     }
   }
+  options { retry(3) }
   stages {
-    timeout(time: 1, unit: 'HOURS') {
-      stage('Example') {
-          steps {
-              echo 'Hello World'
-          }
-      }
-    }
     stage('Initial Settings') {
       steps {
         container('jnlp') {
