@@ -58,7 +58,6 @@ pipeline {
     }
     stage('Unit Tests & Sonar') {
       when {
-        beforeAgent true
         expression { FAST_MODE != 'true' }
       }
       parallel {
