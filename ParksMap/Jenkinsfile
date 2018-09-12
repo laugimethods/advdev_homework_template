@@ -21,6 +21,7 @@ pipeline {
         container('jnlp') {
           echo "GUID: ${GUID}"
           echo "CLUSTER: ${CLUSTER}"
+          echo "FAST_MODE: ${FAST_MODE}"
           sh 'skopeo --version'
           sh "$maven -version"
           sh 'pwd'
@@ -57,9 +58,9 @@ pipeline {
       }
     }
     stage('Unit Tests & Sonar') {
-//      when {
-//        environment name: 'TEST', value: 'true'
-//      }
+      when {
+        expression { FAST_MODE != 'true' }
+      }
       parallel {
         stage('Unit Tests') {
           steps {
@@ -84,6 +85,9 @@ pipeline {
     stage('Deployment to Registry') {
       parallel {
         stage('Publish WAR to Nexus') {
+          when {
+            expression { FAST_MODE != 'true' }
+          }
           steps {
             container('jnlp') {
               dir('ParksMap') {
@@ -130,6 +134,9 @@ pipeline {
     }
     // Run Integration Tests in the Development Environment.
     stage('Integration Tests') {
+      when {
+        expression { FAST_MODE != 'true' }
+      }
       steps {
         container('jnlp') {
           dir('ParksMap') {
@@ -149,6 +156,9 @@ pipeline {
     }
     // Copy Image to Nexus Docker Registry
     stage('Copy Image to Nexus Docker Registry') {
+      when {
+        expression { FAST_MODE != 'true' }
+      }
       steps {
         container('jnlp') {
           dir('ParksMap') {
