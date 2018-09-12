@@ -12,14 +12,14 @@ oc_project () {
   done
 }
 
-switch_backend_service() {
+switch_backend_service_color() {
   SERVICE=$1
   GUID=$2
 
   switch_service_color $SERVICE $GUID $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/")
 }
 
-switch_frontend_service() {
+switch_frontend_service_color() {
   SERVICE=$1
   GUID=$2
 
