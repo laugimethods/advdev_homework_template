@@ -21,6 +21,7 @@ pipeline {
         container('jnlp') {
           echo "GUID: ${GUID}"
           echo "CLUSTER: ${CLUSTER}"
+          echo "FAST_MODE: ${FAST_MODE}"
           sh 'skopeo --version'
           sh "$maven -version"
           sh 'pwd'
@@ -57,9 +58,12 @@ pipeline {
       }
     }
     stage('Unit Tests & Sonar') {
-//      when {
-//        environment name: 'TEST', value: 'true'
-//      }
+      when {
+        expression { FAST_MODE != 'true' }
+      }
+      options {
+          retry(3)
+      }
       parallel {
         stage('Unit Tests') {
           steps {
@@ -72,10 +76,6 @@ pipeline {
         }
         stage('Sonar') {
           steps {
-            options {
-                timeout(time: 10, unit: 'MINUTES')
-                retry(3)
-            }
             container('jnlp') {
               dir('MLBParks') {
                 sh "$maven sonar:sonar -Dsonar.ws.timeout=600 -Dsonar.host.url=http://sonarqube-${GUID}-sonarqube.apps.${CLUSTER} -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
@@ -88,6 +88,9 @@ pipeline {
     stage('Deployment to Registry') {
       parallel {
         stage('Publish WAR to Nexus') {
+          when {
+            expression { FAST_MODE != 'true' }
+          }
           steps {
             container('jnlp') {
               dir('MLBParks') {
@@ -135,6 +138,9 @@ pipeline {
     }
     // Run Integration Tests in the Development Environment.
     stage('Integration Tests') {
+      when {
+        expression { FAST_MODE != 'true' }
+      }
       steps {
         container('jnlp') {
           dir('MLBParks') {
@@ -156,18 +162,17 @@ pipeline {
       steps {
         container('jnlp') {
           dir('MLBParks') {
-            echo "Populate the MLB Parks Data in the MongoDB database"
-            // 0 Items inserted in database. Error connecting
+            echo "Populate the MLB Parks Data into the MongoDB database"
             sh "curl http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/data/load/"
-
-            echo "Getting the MLB Parks data from the MongoDB database"
-            sh "curl http://mlbparks-${GUID}-parks-dev.apps.na39.openshift.opentlc.com/ws/data/all/"
           }
         }
       }
     }
     // Copy Image to Nexus Docker Registry
     stage('Copy Image to Nexus Docker Registry') {
+      when {
+        expression { FAST_MODE != 'true' }
+      }
       steps {
         container('jnlp') {
           dir('MLBParks') {
