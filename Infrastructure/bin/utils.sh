@@ -30,6 +30,8 @@ switch_service_color() {
   SERVICE=$1
   GUID=$2
 
+  echo "$1 / $2 / $3"
+
   if [[ $3 = *"Blue"* ]]; then
     CURRENT='blue'
     TARGET='green'
@@ -39,6 +41,7 @@ switch_service_color() {
   fi
 
   echo ""
+  echo "---------------------------------------------------------------------------------------------------------------------"
   echo "Setting ${SERVICE} Service in Parks Production Environment in project ${GUID}-parks-prod from ${CURRENT} to ${TARGET}"
   echo ""
 
@@ -61,20 +64,21 @@ switch_service_color() {
 
 switch_all_service_color() {
   GUID=$1
-  CURRENT=$2
+  ORIGIN=$2
+  readonly ORIGIN
 
   curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/"
   echo ""
   curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/backends/list"
   echo ""
 
-  switch_service_color 'mlbparks' "${GUID}" "${CURRENT}"
+  switch_service_color 'mlbparks' "${GUID}" "${ORIGIN}"
   curl "http://mlbparks-${TARGET}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/"
 
-  switch_service_color 'nationalparks' "${GUID}" "${CURRENT}"
+  switch_service_color 'nationalparks' "${GUID}" "${ORIGIN}"
   curl "http://nationalparks-${TARGET}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/"
 
-  switch_service_color 'parksmap' "${GUID}" "${CURRENT}"
+  switch_service_color 'parksmap' "${GUID}" "${ORIGIN}"
 
   curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/"
   echo ""
