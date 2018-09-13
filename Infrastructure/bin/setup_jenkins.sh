@@ -40,12 +40,6 @@ oc new-app jenkins-persistent \
   --param VOLUME_CAPACITY=4Gi \
   -n "${GUID}-jenkins"
 
-mkdir ./tmp
-sed -e "s/\${GUID}/$GUID/" "${TEMPLATES_PATH:-./Infrastructure/templates}"/jenkins_configmap.yaml > ./tmp/jenkins_configmap.yaml
-oc create configmap jenkins --from-file=./tmp/jenkins_configmap.yaml -n "${GUID}-jenkins"
-
-: ''
-
 echo '------ Build Skopeo Docker Image ------'
 # https://docs.openshift.com/container-platform/3.9/dev_guide/builds/build_output.html
 
