@@ -10,5 +10,5 @@ fi
 GUID=$1
 echo "Resetting Parks Production Environment in project ${GUID}-parks-prod to Blue Services"
 
-source ./utils.sh
+source "${BIN_PATH:-./Infrastructure/bin}"/utils.sh
 switch_all_service_color "$GUID" 'Green'

@@ -1,5 +1,5 @@
 #!/bin/bash
-source ./utils.sh
+source "${BIN_PATH:-./Infrastructure/bin}"/utils.sh
 
 # Setup Production Project (initial active services: Green)
 if [ "$#" -ne 1 ]; then
@@ -31,7 +31,7 @@ oc policy add-role-to-group system:image-puller "system:serviceaccounts:${GUID}-
 oc policy add-role-to-user view --serviceaccount=default
 
 echo '------ Set up a replicated MongoDB database via StatefulSet with at least three replicas ------'
-source ./configs/mongodb_prod.sh
+source "${BIN_PATH:-./Infrastructure/bin}"/configs/mongodb_prod.sh
 ## https://docs.openshift.com/container-platform/3.9/using_images/db_images/mongodb.html#using-mongodb-replication
 oc new-app -f ../templates/mongodb-petset-persistent.yaml \
     -p MONGODB_DATABASE="$MONGODB_DATABASE" \

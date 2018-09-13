@@ -1,5 +1,5 @@
 #!/bin/bash
-source ./utils.sh
+source "${BIN_PATH:-./Infrastructure/bin}"/utils.sh
 
 # Setup Nexus Project
 if [ "$#" -ne 1 ]; then

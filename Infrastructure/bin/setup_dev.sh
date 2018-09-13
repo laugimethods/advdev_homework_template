@@ -1,5 +1,5 @@
 #!/bin/bash
-source ./utils.sh
+source "${BIN_PATH:-./Infrastructure/bin}"/utils.sh
 
 # Setup Development Project
 if [ "$#" -ne 1 ]; then
@@ -22,7 +22,7 @@ echo '------ Setting up the DEV project ------'
 oc policy add-role-to-user edit "system:serviceaccount:${GUID}-jenkins:jenkins"
 
 echo '------ Setting up the ephemeral MongoDB ------'
-source ./configs/mongodb_dev.sh
+source "${BIN_PATH:-./Infrastructure/bin}"/configs/mongodb_dev.sh
 # https://docs.openshift.com/container-platform/3.9/using_images/db_images/mongodb.html
 oc new-app \
     -p MONGODB_USER="$MONGODB_USERNAME" \
