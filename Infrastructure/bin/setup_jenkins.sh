@@ -40,6 +40,10 @@ oc new-app jenkins-persistent \
   --param VOLUME_CAPACITY=4Gi \
   -n "${GUID}-jenkins"
 
+oc patch dc/jenkins \
+  -p "{\"spec\":{\"strategy\":{\"recreateParams\":{\"timeoutSeconds\":\"1200\"}}}}" \
+  -n "${GUID}-jenkins"
+
 echo '------ Build Skopeo Docker Image ------'
 # https://docs.openshift.com/container-platform/3.9/dev_guide/builds/build_output.html
 
