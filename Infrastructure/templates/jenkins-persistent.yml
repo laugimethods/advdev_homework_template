@@ -34,7 +34,7 @@ objects:
   kind: Route
   metadata:
     annotations:
-      haproxy.router.openshift.io/timeout: 4m
+      haproxy.router.openshift.io/timeout: 12m
       template.openshift.io/expose-uri: http://{.spec.host}{.spec.path}
     name: ${JENKINS_SERVICE_NAME}
   spec:
@@ -93,7 +93,7 @@ objects:
             httpGet:
               path: /login
               port: 8080
-            initialDelaySeconds: 420
+            initialDelaySeconds: 1200
             periodSeconds: 360
             timeoutSeconds: 240
           name: jenkins
@@ -101,7 +101,7 @@ objects:
             httpGet:
               path: /login
               port: 8080
-            initialDelaySeconds: 3
+            initialDelaySeconds: 1200
             timeoutSeconds: 800
           resources:
             limits:
