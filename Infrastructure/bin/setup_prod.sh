@@ -89,8 +89,8 @@ oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/parksmap_backend.y
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/nationalparks:latest" \
   -n "${GUID}-parks-prod"
 
-## Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
-oc rollout latest dc/nationalparks-green -n "${GUID}-parks-prod"
+##- Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
+##-  oc rollout latest dc/nationalparks-green -n "${GUID}-parks-prod"
 oc expose dc nationalparks-green --name=nationalparks -l type=parksmap-backend --port 8080 -n "${GUID}-parks-prod"
 oc expose svc nationalparks -n "${GUID}-parks-prod"
 
@@ -110,11 +110,11 @@ oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/parksmap_frontend.
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/parksmap:latest" \
   -n "${GUID}-parks-prod"
 
-## Wait for the backend services completion
-oc rollout status dc/mlbparks-green -n "${GUID}-parks-prod"
-oc rollout status dc/nationalparks-green -n "${GUID}-parks-prod"
+##- Wait for the backend services completion
+##- oc rollout status dc/mlbparks-green -n "${GUID}-parks-prod"
+##- oc rollout status dc/nationalparks-green -n "${GUID}-parks-prod"
 
-## Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
-oc rollout latest dc/parksmap-green -n "${GUID}-parks-prod"
+##- Make the Green service active initially to guarantee a Blue rollout upon the first pipeline run
+##- oc rollout latest dc/parksmap-green -n "${GUID}-parks-prod"
 oc expose dc parksmap-green --name=parksmap --port 8080 -n "${GUID}-parks-prod"
 oc expose svc parksmap -n "${GUID}-parks-prod"
