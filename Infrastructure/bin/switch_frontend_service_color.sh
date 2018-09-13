@@ -10,5 +10,6 @@ fi
 SERVICE=$1
 GUID=$2
 
-source "${BIN_PATH:-./Infrastructure/bin}"/utils.sh
+BASEDIR=$(dirname "$0")
+source "${BASEDIR}/utils.sh"
 switch_frontend_service_color "${SERVICE}" "${GUID}"
