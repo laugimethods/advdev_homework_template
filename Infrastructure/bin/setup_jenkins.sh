@@ -41,7 +41,7 @@ oc new-app jenkins-persistent \
   -n "${GUID}-jenkins"
 
 oc patch dc/jenkins \
-  -p "{\"spec\":{\"strategy\":{\"recreateParams\":{\"timeoutSeconds\":\"1200\"}}}}" \
+  -p "{\"spec\":{\"strategy\":{\"recreateParams\":{\"timeoutSeconds\":1200}}}}" \
   -n "${GUID}-jenkins"
 
 echo '------ Build Skopeo Docker Image ------'
