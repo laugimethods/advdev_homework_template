@@ -29,10 +29,11 @@ switch_frontend_service_color() {
 switch_service_color() {
   SERVICE=$1
   GUID=$2
+  COLOR_RESPONSE=$3
 
   echo "$1 / $2 / $3"
 
-  if [[ $3 = *"Blue"* ]]; then
+  if [[ $COLOR_RESPONSE = *"Blue"* ]]; then
     CURRENT='blue'
     TARGET='green'
   else
@@ -48,11 +49,11 @@ switch_service_color() {
   # Scale up TARGET SERVICE
   oc scale dc/${SERVICE}-${TARGET} --replicas=1 -n "${GUID}-parks-prod"
   oc rollout latest dc/${SERVICE}-${TARGET} -n "${GUID}-parks-prod"
-  oc rollout status dc/${SERVICE}-${TARGET} -n "${GUID}-parks-prod"
-  #  curl "http://${SERVICE}-${TARGET}-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/"
-  #  echo ""
-  #  curl "http://${SERVICE}-${TARGET}-${GUID}-parks-prod.apps.${CLUSTER}/ws/backends/list"
-  #  echo ""
+
+  if [ ${#COLOR_RESPONSE} -ge 6 ]; then ## Service was already alive, so wait for the new version
+    oc rollout status dc/${SERVICE}-${TARGET} -n "${GUID}-parks-prod"
+  fi
+
   # Update the route to ${SERVICE}-${TARGET}
   oc patch service/${SERVICE} \
     -p "{\"metadata\":{\"labels\":{\"app\":\"${SERVICE}-${TARGET}\", \"template\":\"${SERVICE}-${TARGET}\"}}, \
