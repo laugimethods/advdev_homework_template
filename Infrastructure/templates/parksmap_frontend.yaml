@@ -116,15 +116,15 @@ parameters:
 - description: The name of the ParksMap Application.
   displayName: ParksMap Application Name
   name: APPNAME
-  value: "ParksMap"
+  required: true
 - description: The name of the Backend Parks Service.
   displayName: Backend Service Name
   name: SERVICE
-  value: "parksmap"
+  required: true
 - description: The name of the ParksMap Deployment.
   displayName: ParksMap Deployment Name
   name: NAME
-  value: "parksmap"
+  required: true
 - description: The Docker Image Name and Tag
   displayName: Docker Image Name and Tag
   name: IMAGE

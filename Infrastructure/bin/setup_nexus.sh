@@ -22,7 +22,7 @@ oc_project "$GUID" 'nexus'
 # https://docs.openshift.com/container-platform/3.5/dev_guide/app_tutorials/maven_tutorial.html#nexus-setting-up-nexus
 
 # Ideally just calls a template
-oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/nexus.yml
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/nexus.yml -n "${GUID}-nexus"
 
 # Code to set up the Nexus. It will need to
 # * Create Nexus
@@ -35,7 +35,7 @@ oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/nexus.yml
 echo -n "Checking if Nexus is Ready..."
 while : ; do
 ##  oc get pod -n ${GUID}-nexus|grep '\-2\-'|grep -v deploy|grep "1/1"
-  oc get pod -n ${GUID}-nexus|grep -v deploy|grep "1/1"
+  oc get pod -n ${GUID}-nexus | grep -v deploy|grep "1/1"
   [[ "$?" == "1" ]] || break
   echo -n "."
   sleep 10
@@ -51,5 +51,5 @@ rm setup_nexus3.sh
 
 echo -n "Configuring Nexus Service and Route"
 
-oc expose dc nexus3 --port=5000 --name=nexus-registry
-oc create route edge nexus-registry --service=nexus-registry --port=5000
+oc expose dc nexus3 --port=5000 --name=nexus-registry -n "${GUID}-nexus"
+oc create route edge nexus-registry --service=nexus-registry --port=5000 -n "${GUID}-nexus"

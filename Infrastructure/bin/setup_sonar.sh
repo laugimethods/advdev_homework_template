@@ -24,4 +24,7 @@ oc_project "$GUID" 'sonarqube'
 
 # https://github.com/OpenShiftDemos/sonarqube-openshift-docker
 
-oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/sonarqube-postgresql-template.yaml --param=SONARQUBE_IMAGE=docker.io/wkulhanek/sonarqube --param=SONARQUBE_VERSION=6.7.4
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/sonarqube-postgresql-template.yaml \
+  --param=SONARQUBE_IMAGE=docker.io/wkulhanek/sonarqube \
+  --param=SONARQUBE_VERSION=6.7.4 \
+  -n "${GUID}-sonarqube"
