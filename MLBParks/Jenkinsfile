@@ -5,7 +5,7 @@ pipeline {
   agent {
     kubernetes {
       cloud "openshift"
-      label 'skopeo-pod_2x'
+      label 'skopeo-pod'
       inheritFrom "maven"
       containerTemplate {
         name 'jnlp'
