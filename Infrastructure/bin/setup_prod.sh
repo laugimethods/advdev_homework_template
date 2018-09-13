@@ -33,7 +33,7 @@ oc policy add-role-to-user view --serviceaccount=default
 echo '------ Set up a replicated MongoDB database via StatefulSet with at least three replicas ------'
 source "${BIN_PATH:-./Infrastructure/bin}"/configs/mongodb_prod.sh
 ## https://docs.openshift.com/container-platform/3.9/using_images/db_images/mongodb.html#using-mongodb-replication
-oc new-app -f ../templates/mongodb-petset-persistent.yaml \
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/mongodb-petset-persistent.yaml \
     -p MONGODB_DATABASE="$MONGODB_DATABASE" \
     --name="$MONGODB_SERVICE_NAME"
 
@@ -51,13 +51,13 @@ oc create secret generic mongodb-secret \
 
 echo '------ Setting up the MLB Parks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/MLBParks
-oc new-app -f ../templates/parksmap_backend.yaml \
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/parksmap_backend.yaml \
   -p "SERVICE=mlbparks-green" \
   -p "DEPLOYMENT=mlbparks-green" \
   -p "APPNAME=MLB Parks (Green)" \
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/mlbparks:latest"
 
-oc new-app -f ../templates/parksmap_backend.yaml \
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/parksmap_backend.yaml \
   -p "SERVICE=mlbparks-blue" \
   -p "DEPLOYMENT=mlbparks-blue" \
   -p "APPNAME=MLB Parks (Blue)" \
@@ -70,13 +70,13 @@ oc expose svc mlbparks
 
 echo '------ Setting up the Nationalparks backend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/Nationalparks
-oc new-app -f ../templates/parksmap_backend.yaml \
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/parksmap_backend.yaml \
   -p "SERVICE=nationalparks-green" \
   -p "DEPLOYMENT=nationalparks-green" \
   -p "APPNAME=National Parks (Green)" \
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/nationalparks:latest"
 
-oc new-app -f ../templates/parksmap_backend.yaml \
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/parksmap_backend.yaml \
   -p "SERVICE=nationalparks-blue" \
   -p "DEPLOYMENT=nationalparks-blue" \
   -p "APPNAME=National Parks (Blue)" \
@@ -89,13 +89,13 @@ oc expose svc nationalparks
 
 echo '------ Setting up the ParksMap frontend Application ------'
 ## https://github.com/wkulhanek/advdev_homework_template/tree/master/ParksMap
-oc new-app -f ../templates/parksmap_frontend.yaml \
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/parksmap_frontend.yaml \
   -p "SERVICE=parksmap-green" \
   -p "NAME=parksmap-green" \
   -p "APPNAME=ParksMap (Green)" \
   -p "IMAGE=docker-registry.default.svc:5000/${GUID}-parks-dev/parksmap:latest"
 
-oc new-app -f ../templates/parksmap_frontend.yaml \
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/parksmap_frontend.yaml \
   -p "SERVICE=parksmap-blue" \
   -p "NAME=parksmap-blue" \
   -p "APPNAME=ParksMap (Blue)" \

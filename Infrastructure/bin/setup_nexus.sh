@@ -22,7 +22,7 @@ oc_project "$GUID" 'nexus'
 # https://docs.openshift.com/container-platform/3.5/dev_guide/app_tutorials/maven_tutorial.html#nexus-setting-up-nexus
 
 # Ideally just calls a template
-oc new-app -f ../templates/nexus.yml
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/nexus.yml
 
 # Code to set up the Nexus. It will need to
 # * Create Nexus

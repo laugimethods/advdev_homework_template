@@ -20,8 +20,8 @@ oc_project "$GUID" 'sonarqube'
 
 # Code to set up the SonarQube project.
 # Ideally just calls a template
-# oc new-app -f ../templates/sonarqube.yaml --param .....
+# oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/sonarqube.yaml --param .....
 
 # https://github.com/OpenShiftDemos/sonarqube-openshift-docker
 
-oc new-app -f ../templates/sonarqube-postgresql-template.yaml --param=SONARQUBE_IMAGE=docker.io/wkulhanek/sonarqube --param=SONARQUBE_VERSION=6.7.4
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/sonarqube-postgresql-template.yaml --param=SONARQUBE_IMAGE=docker.io/wkulhanek/sonarqube --param=SONARQUBE_VERSION=6.7.4
