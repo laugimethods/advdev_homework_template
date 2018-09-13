@@ -16,22 +16,23 @@ switch_backend_service_color() {
   SERVICE=$1
   GUID=$2
 
-  switch_service_color $SERVICE $GUID $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/")
+  switch_service_color $SERVICE $GUID 'wait' $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/")
 }
 
 switch_frontend_service_color() {
   SERVICE=$1
   GUID=$2
 
-  switch_service_color $SERVICE $GUID $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/")
+  switch_service_color $SERVICE $GUID 'wait' $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/")
 }
 
 switch_service_color() {
   SERVICE=$1
   GUID=$2
-  COLOR_RESPONSE=$3
+  WAIT=$3
+  COLOR_RESPONSE=$4
 
-  echo "$1 / $2 / $3"
+  echo "$1 / $2 / $3 / $4"
 
   if [[ $COLOR_RESPONSE = *"Blue"* ]]; then
     CURRENT='blue'
@@ -50,7 +51,7 @@ switch_service_color() {
   oc scale dc/${SERVICE}-${TARGET} --replicas=1 -n "${GUID}-parks-prod"
   oc rollout latest dc/${SERVICE}-${TARGET} -n "${GUID}-parks-prod"
 
-  if [ ${#COLOR_RESPONSE} -ge 6 ]; then ## Service was already alive, so wait for the new version
+  if [[ $WAIT == "wait" ]]; then ## Service was already alive, so wait for the new version
     oc rollout status dc/${SERVICE}-${TARGET} -n "${GUID}-parks-prod"
   fi
 
@@ -73,13 +74,13 @@ switch_all_service_color() {
   curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/backends/list"
   echo ""
 
-  switch_service_color 'mlbparks' "${GUID}" "${ORIGIN}"
+  switch_service_color 'mlbparks' "${GUID}" 'pass' "${ORIGIN}"
   curl "http://mlbparks-${TARGET}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/"
 
-  switch_service_color 'nationalparks' "${GUID}" "${ORIGIN}"
+  switch_service_color 'nationalparks' "${GUID}" 'pass' "${ORIGIN}"
   curl "http://nationalparks-${TARGET}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/"
 
-  switch_service_color 'parksmap' "${GUID}" "${ORIGIN}"
+  switch_service_color 'parksmap' "${GUID}" 'pass' "${ORIGIN}"
 
   curl "http://parksmap-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/"
   echo ""
