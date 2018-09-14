@@ -17,7 +17,8 @@ switch_backend_service_color() {
   GUID=$2
   CLUSTER=$3
 
-  switch_service_color $SERVICE $GUID 'wait' $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/")
+  COLOR_STR=$(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/")
+  switch_service_color $SERVICE $GUID 'wait' "$COLOR_STR"
 }
 
 switch_frontend_service_color() {
@@ -25,7 +26,8 @@ switch_frontend_service_color() {
   GUID=$2
   CLUSTER=$3
 
-  switch_service_color $SERVICE $GUID 'wait' $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/")
+  COLOR_STR=$(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/")
+  switch_service_color $SERVICE $GUID 'wait' "$COLOR_STR"
 }
 
 switch_service_color() {
