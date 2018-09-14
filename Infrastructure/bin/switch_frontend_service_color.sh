@@ -1,9 +1,9 @@
 #!/bin/bash
 # Reset Production Project (initial active services: Blue)
 # This sets all services to the Blue service so that any pipeline run will deploy Green
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 3 ]; then
     echo "Usage:"
-    echo "  $0 SERVICE GUID"
+    echo "  $0 SERVICE GUID CLUSTER"
     exit 1
 fi
 
