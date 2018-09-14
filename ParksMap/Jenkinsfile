@@ -178,6 +178,8 @@ pipeline {
       steps {
         container('jnlp') {
           dir('Infrastructure/bin') {
+            echo "Wait 2 minutes for the backend services"
+            sleep 120 // seconds
             echo "Automatically executes the blue-green go-live switch"
             sh "./switch_frontend_service_color.sh parksmap ${GUID} ${CLUSTER}"
           }
