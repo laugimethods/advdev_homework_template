@@ -9,7 +9,8 @@ fi
 
 SERVICE=$1
 GUID=$2
+CLUSTER=$3
 
 BASEDIR=$(dirname "$0")
 source "${BASEDIR}/utils.sh"
-switch_backend_service_color "${SERVICE}" "${GUID}"
+switch_backend_service_color "${SERVICE}" "${GUID}" "${CLUSTER}"

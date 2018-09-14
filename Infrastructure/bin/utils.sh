@@ -15,6 +15,7 @@ oc_project () {
 switch_backend_service_color() {
   SERVICE=$1
   GUID=$2
+  CLUSTER=$3
 
   switch_service_color $SERVICE $GUID 'wait' $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/info/")
 }
@@ -22,6 +23,7 @@ switch_backend_service_color() {
 switch_frontend_service_color() {
   SERVICE=$1
   GUID=$2
+  CLUSTER=$3
 
   switch_service_color $SERVICE $GUID 'wait' $(curl "http://${SERVICE}-${GUID}-parks-prod.apps.${CLUSTER}/ws/appname/")
 }
