@@ -126,8 +126,8 @@ pipeline {
             sh "oc set image dc/parksmap parksmap=docker-registry.default.svc:5000/${GUID}-parks-dev/parksmap:${devTag} -n ${GUID}-parks-dev"
 
             // Deploy the development application.
-            openshiftDeploy depCfg: 'parksmap', namespace: "${GUID}-parks-dev", verbose: 'false', waitTime: '', waitUnit: 'sec'
-            openshiftVerifyDeployment depCfg: 'parksmap', namespace: "${GUID}-parks-dev", replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
+            openshiftDeploy depCfg: 'parksmap', namespace: "${GUID}-parks-dev", verbose: 'false', waitTime: '20', waitUnit: 'min'
+            openshiftVerifyDeployment depCfg: 'parksmap', namespace: "${GUID}-parks-dev", replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '20', waitUnit: 'min'
             openshiftVerifyService namespace: "${GUID}-parks-dev", svcName: 'parksmap', verbose: 'false'
           }
         }
