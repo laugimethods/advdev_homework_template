@@ -46,7 +46,7 @@ export FAST_MODE=true
 sed "s/\${GUID}/${GUID}/g;s/\${CLUSTER}/${CLUSTER}/g;s/\${FAST_MODE}/${FAST_MODE:-false}/g" "${TEMPLATES_PATH:-./Infrastructure/templates}"/BuildConfig_MLBParks | oc create -n "${GUID}-jenkins" -f -
 ```
 
-* All the Jenkins builds are defined as declarative pipelines, while still running on a `skopeo` pods:
+* All the Jenkins builds are defined as [declarative pipelines](MLBParks/Jenkinsfile), while still running on a `skopeo` pods:
 ```
 pipeline {
   agent {
