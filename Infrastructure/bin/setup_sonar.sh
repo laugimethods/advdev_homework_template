@@ -26,5 +26,5 @@ oc_project "$GUID" 'sonarqube'
 
 oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/sonarqube-postgresql-template.yaml \
   --param=SONARQUBE_IMAGE=docker.io/wkulhanek/sonarqube \
-  --param=SONARQUBE_VERSION=6.7.4 \
+  --param=SONARQUBE_VERSION=7.3 \
   -n "${GUID}-sonarqube"
