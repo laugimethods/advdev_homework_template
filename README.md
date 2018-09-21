@@ -36,10 +36,9 @@ Also, it is possible to manually trigger the blue/green switch:
 
 Take note that to make sure that the relative paths included inside those scripts are not the ones by default (i.e. the ones required inside the main pipeline), some variables have to be set locally:
 ```
-```
-> export TEMPLATES_PATH='../templates'
-> export BIN_PATH='.'
-> export FAST_MODE=true
+export TEMPLATES_PATH='../templates'
+export BIN_PATH='.'
+export FAST_MODE=true
 ```
 
 * Since the BuildConfig files cannot make use of parameters, they need to be "hard coded" first with the right values before being deployed:
@@ -75,4 +74,4 @@ pipeline {
 ...
 ```
 
-* The `jenkins-slave-appdev` Docker Image is itself build thanks to a [dedicated build configuration](./templates/BuildConfig_Skopeo).
+* The `jenkins-slave-appdev` Docker Image is itself build thanks to a [dedicated build configuration](./Infrastructure/templates/BuildConfig_Skopeo).
