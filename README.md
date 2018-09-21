@@ -74,4 +74,4 @@ pipeline {
 ...
 ```
 
-* The `jenkins-slave-appdev` Docker Image is itself build thanks to a [dedicated build configuration](./templates/BuildConfig_Skopeo).
+* The `jenkins-slave-appdev` Docker Image is itself build thanks to a [dedicated build configuration](./Infrastructure/templates/BuildConfig_Skopeo).
