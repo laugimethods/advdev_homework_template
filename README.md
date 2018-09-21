@@ -1,4 +1,4 @@
-== Parks Map Multi-service Application
+# Parks Map Multi-service Application
 
 This is an example application consisting of three micro-services to be used in the Advanced OpenShift Development Homework Assignment as defined in https://www.opentlc.com/labs/ocp_advanced_development/07_1_Assignment_Lab.html .
 
@@ -11,8 +11,7 @@ In this repository are three services:
 
 There is also a directory "Infrastructure" which contains required scripts to set up the entire homework environment from scratch as well as templates to create the various components.
 
-That Homework assignment has been executed on the the pipeline defined at https://github.com/wkulhanek/advdev_homework_grading.
-Here is a link to a successful run: https://jenkins-gpte-jenkins.apps.na39.openshift.opentlc.com/blue/organizations/jenkins/Grade%20Adv%20Development%20Homework/detail/Grade%20Adv%20Development%20Homework/912/pipeline/
+Here is a link to a successful run on the the pipeline defined at https://github.com/wkulhanek/advdev_homework_grading: https://jenkins-gpte-jenkins.apps.na39.openshift.opentlc.com/blue/organizations/jenkins/Grade%20Adv%20Development%20Homework/detail/Grade%20Adv%20Development%20Homework/912/pipeline/
 
 ![Grade Adv Development Homework 912](./images/Grade%20Adv%20Development%20Homework%20912.png?raw=true "Grade%20Adv%20Development%20Homework%20912")
 ![Grade Adv Development Homework 911](./images/Grade%20Adv%20Development%20Homework%20911.png?raw=true "Grade%20Adv%20Development%20Homework%20911")
@@ -29,13 +28,13 @@ If needed, individual scripts can be called:
 sleep 5
 ./full_setup.sh setup_prod STOP
 ```
-Also, it is possible to trigger manually the blue/green switch:
+Also, it is possible to manually trigger the blue/green switch:
 ```
 ./set_prod.sh  "$GUID"
 ./reset_prod.sh  "$GUID"
 ```
 
-Take note that to make sure that the relative paths included inside those scripts are not the ones by default (the ones required inside the main pipeline), some variables have to be set locally:
+Take note that to make sure that the relative paths included inside those scripts are not the ones by default (i.e. the ones required inside the main pipeline), some variables have to be set locally:
 ```
 ```
 > export TEMPLATES_PATH='../templates'
