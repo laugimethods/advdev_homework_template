@@ -16,7 +16,7 @@ Here is a link to a successful run on the the pipeline defined at https://github
 ![Grade Adv Development Homework 912](./images/Grade%20Adv%20Development%20Homework%20912.png?raw=true "Grade%20Adv%20Development%20Homework%20912")
 ![Grade Adv Development Homework 911](./images/Grade%20Adv%20Development%20Homework%20911.png?raw=true "Grade%20Adv%20Development%20Homework%20911")
 
-Some particularities:
+## Some notes:
 
 * For debugging purpose, it is possible to call the scripts, step by step, directly from a console (credential files have to be defined first):
 ```
