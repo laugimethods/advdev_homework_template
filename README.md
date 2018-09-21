@@ -74,4 +74,6 @@ pipeline {
 ...
 ```
 
+![parksmap-pipeline](./images/parksmap-pipeline.png)
+
 * The `jenkins-slave-appdev` Docker Image is itself build thanks to a [dedicated build configuration](./Infrastructure/templates/BuildConfig_Skopeo).
