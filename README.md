@@ -2,7 +2,7 @@
 
 This is an example application consisting of three micro-services to be used in the Advanced OpenShift Development Homework Assignment as defined in https://www.opentlc.com/labs/ocp_advanced_development/07_1_Assignment_Lab.html .
 
-The original repository repository has been clone into this public repository, which the instructor has access to: https://github.com/laugimethods/advdev_homework_template
+> The original repository has been clone into this public repository, which the instructor has access to: https://github.com/laugimethods/advdev_homework_template
 
 In this repository are three services:
 
