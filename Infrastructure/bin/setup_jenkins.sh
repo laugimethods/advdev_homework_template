@@ -34,9 +34,10 @@ oc_project "$GUID" 'jenkins'
 
 echo '------ Create the Jenkins App ------'
 
-oc new-app jenkins-persistent \
+oc new-app -f "${TEMPLATES_PATH:-./Infrastructure/templates}"/jenkins-persistent-template.json \
   --param ENABLE_OAUTH=true \
   --param MEMORY_LIMIT=2Gi \
+  --param CPU_LIMIT=1 \
   --param VOLUME_CAPACITY=4Gi \
   -n "${GUID}-jenkins"
 
